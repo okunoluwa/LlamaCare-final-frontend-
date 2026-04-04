@@ -1,0 +1,130 @@
+<div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-heartbeat"></i>
+                <span>LlamaCare</span>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">JS</div>
+                <div>
+                    <div id="userName">John Smith</div>
+                    <div style="font-size: 0.9rem; color: var(--light-text);">Patient</div>
+                </div>
+            </div>
+        </div>
+
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            color: var(--secondary-green);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(to right, var(--primary-blue), var(--secondary-green));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            align-items: right;  
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+
+          // Initialize patient name (in a real app, this would come from login)
+        const patientNames = ["Rearabetswe Sons", "Neo Letswalo ", "Enoch Emmanuel", "Kamogelo Mvemve", "Tinyiko Selamolela"];
+        const randomName = patientNames[Math.floor(Math.random() * patientNames.length)];
+        patientName.textContent = randomName;
+        modalPatientName.textContent = randomName;
+
+
+        /* Color variables for light mode */
+        :root {
+            --primary-blue: #3498db;
+            --secondary-green: #2ecc71;
+            --dark-text: #2c3e50;
+            --light-text: #7f8c8d;
+            --background: #f0f9ff;
+            --white: #ffffff;
+            --card-bg: #ffffff;
+            --input-border: #ecf0f1;
+            --input-bg: #f8fafc;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --shadow-blue: rgba(52, 152, 219, 0.4);
+            --urgent-red: #e74c3c;
+            --urgent-red-light: #fadbd8;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --info: #3498db;
+        }
+        
+        /* Dark mode variables */
+        .dark-mode {
+            --primary-blue: #5dade2;
+            --secondary-green: #58d68d;
+            --dark-text: #ecf0f1;
+            --light-text: #bdc3c7;
+            --background: #1a252f;
+            --white: #2c3e50;
+            --card-bg: #34495e;
+            --input-border: #4a6278;
+            --input-bg: #2c3e50;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --shadow-blue: rgba(91, 173, 226, 0.4);
+            --urgent-red: #f1948a;
+            --urgent-red-light: #78281f;
+            --success: #58d68d;
+            --warning: #f8c471;
+            --info: #5dade2;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        <button id="themeToggle" class="theme-toggle">🌙</button>
+
+        // Theme Toggle
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+            
+            // Save theme preference
+            localStorage.setItem('llamacareTheme', document.body.classList.contains('dark-mode') ? 'dark' : 'light');
+        });
+        
+        // Load saved theme preference
+        const savedTheme = localStorage.getItem('llamacareTheme');
+        if (savedTheme === 'dark') {
+            document.body.classList.add('dark-mode');
+            themeToggle.textContent = '☀️';

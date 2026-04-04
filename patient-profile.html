@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Profile</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- DARK MODE BUTTON -->
+    <button class="theme-btn" id="themeToggle">☀️</button>
+
+    <!-- VOICE ASSISTANCE BUTTON -->
+    <button class="voice-btn" id="voiceBtn">🎤</button>
+
+    <!-- Dashboard Layout -->
+<div class="dashboard">
+
+    <!-- SIDE MENU -->
+    <aside class="sidebar">
+        <h3>LIAMACARE Menu</h3>
+        <ul>
+            <li><a href="dashboard.html">🏠 Dashboard</a></li>
+            <li><a href="#">🧑‍⚕️ Doctors</a></li>
+            <li><a href="#">👥 Patients</a></li>
+            <li><a href="#">📅 Appointments</a></li>
+            <li><a href="#">💊 Pharmacy</a></li>
+            <li><a href="#">📨 Messages</a></li>
+            <li><a href="#">⚙️ Settings</a></li>
+            <li><a href="patient-profile.html">profile</a></li>
+        </ul>
+    </aside>
+
+
+    <div class="main">
+
+        <h2>LIamaCare Patient Profile</h2>
+
+        <!-- Profile Picture -->
+        <div style="text-align: center; margin-bottom: 20px;">
+            <img id="patientPhoto" src="default-avatar.png"
+                 alt="Profile Photo" 
+                 style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #0a84ff;">
+        </div>
+
+        <!-- Patient Information -->
+        <label>Name</label>
+        <input type="text" value="John Doe" disabled>
+
+        <label>Email</label>
+        <input type="text" value="johndoe@email.com" disabled>
+
+        <label>Gender</label>
+        <input type="text" value="Male" disabled>
+
+        <label>Age</label>
+        <input type="text" value="32" disabled>
+
+        <label>Location</label>
+        <input type="text" value="New York City" disabled>
+
+        <label>Medical ID</label>
+        <input type="text" value="PT-44382929" disabled>
+
+        <button id="editBtn">Edit Profile</button>
+    </div>
+</div>
+
+    <script src="profile.js"></script>
+
+</body>
+</html>

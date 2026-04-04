@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- Theme Toggle -->
+    <button class="theme-btn" id="themeToggle">🌙</button>
+
+    <!-- Voice Assistant -->
+    <button class="voice-btn" id="voiceBtn">🎤</button>
+
+    <!-- Dashboard Layout -->
+    <div class="dashboard">
+
+        <!-- SIDE MENU -->
+        <aside class="sidebar">
+            <h3>LIAMACARE Menu</h3>
+            <ul>
+                <li><a href="dashboard.html">🏠 Dashboard</a></li>
+                <li><a href="#">🧑‍⚕️ Doctors</a></li>
+                <li><a href="#">👥 Patients</a></li>
+                <li><a href="#">📅 Appointments</a></li>
+                <li><a href="#">💊 Pharmacy</a></li>
+                <li><a href="#">📨 Messages</a></li>
+                <li><a href="#">⚙️ Settings</a></li>
+                <li><a href="patient-profile.html">profile</a></li>
+            </ul>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <div class="main">
+
+            <header class="top-header">
+                <h2>Welcome to LIamaCare Dashboard</h2>
+                <span class="notify">🔔</span>
+            </header>
+
+            <!-- DASHBOARD CARDS -->
+            <div class="cards">
+
+                <div class="card">
+                    <h3>Patients</h3>
+                    <p>0 Active</p>
+                </div>
+
+                <div class="card">
+                    <h3>Appointments</h3>
+                    <p>0 Today</p>
+                </div>
+
+                <div class="card">
+                    <h3>Doctors</h3>
+                    <p>0 Available</p>
+                </div>
+
+                <div class="card">
+                    <h3>Messages</h3>
+                    <p>0 New</p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="dashboard.js"></script>
+
+</body>
+</html>

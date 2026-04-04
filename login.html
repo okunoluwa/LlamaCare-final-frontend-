@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title> Login</title>
+        <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+
+        <button id="themeToggle" class="theme-btn">🌙</button>
+        <button id="voiceAssist" class="voice-btn">🗣️</button>
+
+        <div class="container">
+            <h2>Patient Login</h2>
+
+            <form id="loginForm">
+                <input type="email" id="email" placeholder="Email Address"
+                    required>
+                <input type="password" id="password" placeholder="Password"
+                    required>
+
+                <button type="submit"
+                    onclick="window.location.href='WaitMate.html'">Login</button>
+            </form>
+
+            <p><a href="forget-password.html">Forgot Password?</a></p>
+            <p>Don't have an account? <a
+                    href=" Registration.html">Register</a></p>
+        </div>
+
+        <script src="login.js"></script>
+
+    </body>
+</html>
+
+<script>
+    // Simple theme toggle functionality
+    document.getElementById('themeToggle').addEventListener('click', function() {
+
+        // ===== DATABASE INITIALIZATION - Add this to ALL pages =====
+// This should be added at the beginning of each page's script section
+
+// Function to get current patient from database
+function getCurrentPatient() {
+    // First try to get from localStorage
+    const savedPatient = localStorage.getItem('llamacare_current_patient');
+    
+    if (savedPatient) {
+        return savedPatient;
+    }
+    
+    // If no saved patient, use the random selection from the array
+    const patientNames = ["Rearabetswe Sons", "Neo Letswalo", "Enoch Emmanuel", "Kamogelo Mvemve", "Tinyiko Selamolela"];
+    const randomIndex = Math.floor(Math.random() * patientNames.length);
+    const randomPatient = patientNames[randomIndex];
+    
+    // Save this random patient for consistency across the session
+    localStorage.setItem('llamacare_current_patient', randomPatient);
+    
+    return randomPatient;
+}
+
+// Function to get patient data from database
+function getPatientData(patientName) {
+    const patientList = JSON.parse(localStorage.getItem('llamacare_patient_list') || '[]');
+    
+    // Find patient by name
+    const patientData = patientList.find(patient => 
+        patient.name.toLowerCase() === patientName.toLowerCase()
+    );
+    
+    if (patientData) {
+        return patientData;
+    }
+    
+    // If not found in registration data, return default data
+    return {
+        name: patientName,
+        id: 'LLC-' + Math.floor(1000 + Math.random() * 9000),
+        registrationDate: new Date().toISOString().split('T')[0]
+    };
+}
+
+// Function to get initials from a full name
+function getInitials(fullName) {
+    if (!fullName) return 'LL';
+    
+    return fullName
+        .split(' ')
+        .map(word => word[0])
+        .join('')
+        .toUpperCase();
+}
+
+// Function to update patient info on page
+function updatePatientInfoOnPage() {
+    const patientName = getCurrentPatient();
+    const patientInitials = getInitials(patientName);
+    const patientData = getPatientData(patientName);
+    
+    // Update patient name on page (if element exists)
+    const patientNameElement = document.getElementById('patientName');
+    if (patientNameElement) {
+        patientNameElement.textContent = patientName;
+    }
+    
+    // Update patient avatar with initials (if element exists)
+    const patientAvatarElement = document.getElementById('patientAvatar');
+    if (patientAvatarElement) {
+        patientAvatarElement.textContent = patientInitials;
+    }
+    
+    // Update patient ID (if element exists)
+    const patientIdElement = document.getElementById('patientId');
+    if (patientIdElement && patientData.id) {
+        patientIdElement.textContent = patientData.id;
+    }
+    
+    // Update database patient name (if element exists)
+    const dbPatientNameElement = document.getElementById('dbPatientName');
+    if (dbPatientNameElement) {
+        dbPatientNameElement.textContent = patientName;
+    }
+    
+    // Update notification patient name (if element exists)
+    const notificationPatientElement = document.getElementById('notificationPatientName');
+    if (notificationPatientElement) {
+        notificationPatientElement.textContent = patientName;
+    }
+    
+    console.log(`Current patient: ${patientName} (${patientInitials})`, patientData);
+    return patientName;
+}
+
+// Call this function when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Update patient info
+    updatePatientInfoOnPage();
+    
+    // Rest of your existing DOMContentLoaded code...
+    // [Keep all your existing code here]
+});
+        const body = document.body;
+        const currentTheme = this.textContent;
+        
+        // Toggle between moon and sun
+        if (currentTheme === '🌙') {
+            this.textContent = '☀️';
+            // For a full theme toggle, you would change CSS variables here
+            // This is a simplified version that just changes body background
+            body.style.backgroundColor = '#1a1a2e';
+            body.style.color = '#e6e6e6';
+        } else {
+            this.textContent = '🌙';
+            body.style.backgroundColor = '';
+            body.style.color = '';
+        }
+    });
+    
+    // Simple voice assist button
+    document.getElementById('voiceAssist').addEventListener('click', function() {
+        alert('Voice assistance activated. In a real app, this would enable voice commands for accessibility.');
+    });
+    
+    // Form submission
+    document.getElementById('registerForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Simple validation
+        const password = document.getElementById('password').value;
+        if (password.length < 6) {
+            alert('Password should be at least 6 characters long.');
+            return;
+        }
+        
+        // In a real app, this would submit to a server
+        alert('Account registration submitted successfully! (This is a demo)');
+        this.reset();
+    });
+</script>

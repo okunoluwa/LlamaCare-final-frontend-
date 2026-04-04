@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LlamaCare - Pre-op Preparation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Color variables for light mode */
+        :root {
+            --primary-blue: #3498db;
+            --secondary-green: #2ecc71;
+            --dark-text: #2c3e50;
+            --light-text: #7f8c8d;
+            --background: #f0f9ff;
+            --white: #ffffff;
+            --input-border: #ecf0f1;
+            --input-focus: #3498db;
+            --card-bg: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --gradient-bg: linear-gradient(to right, #3498db, #2ecc71);
+            --warning-color: #f39c12;
+            --success-color: #27ae60;
+        }
+        
+        /* Dark mode variables */
+        .dark-mode {
+            --primary-blue: #2980b9;
+            --secondary-green: #27ae60;
+            --dark-text: #ecf0f1;
+            --light-text: #bdc3c7;
+            --background: #1a1a2e;
+            --white: #2c3e50;
+            --input-border: #34495e;
+            --input-focus: #3498db;
+            --card-bg: #2c3e50;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --gradient-bg: linear-gradient(to right, #2980b9, #27ae60);
+            --warning-color: #d68910;
+            --success-color: #229954;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--dark-text);
+            min-height: 100vh;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(52, 152, 219, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(46, 204, 113, 0.1) 0%, transparent 20%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            background: var(--gradient-bg);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-text);
+            letter-spacing: 1px;
+        }
+        
+        /* Patient info and controls */
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .patient-info {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .patient-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gradient-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .patient-name {
+            font-weight: 600;
+            color: var(--dark-text);
+            font-size: 1.1rem;
+        }
+        
+        .mode-toggle {
+            background: var(--gradient-bg);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .mode-toggle:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        /* Page Title */
+        .page-title {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .page-title h1 {
+            font-size: 2.2rem;
+            color: var(--dark-text);
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title p {
+            font-size: 1.2rem;
+            color: var(--light-text);
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        /* Database Visualization */
+        .database-section {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px var(--shadow-color);
+            margin-bottom: 2.5rem;
+        }
+        
+        .database-section h2 {
+            color: var(--dark-text);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--primary-blue);
+            padding-bottom: 0.5rem;
+        }
+        
+        .database-visual {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .db-record {
+            background-color: rgba(52, 152, 219, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary-blue);
+        }
+        
+        .db-record.highlight {
+            border-left-color: var(--warning-color);
+            background-color: rgba(243, 156, 18, 0.05);
+        }
+        
+        .db-label {
+            font-weight: 600;
+            color: var(--light-text);
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .db-value {
+            color: var(--dark-text);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+        
+        .db-value.procedure {
+            color: var(--primary-blue);
+        }
+        
+        .db-value.time {
+            color: var(--warning-color);
+        }
+        
+        .db-constraints {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed var(--input-border);
+        }
+        
+        .constraint-list {
+            list-style-type: none;
+        }
+        
+        .constraint-list li {
+            padding: 0.3rem 0;
+            color: var(--light-text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .constraint-list li i {
+            color: var(--warning-color);
+        }
+        
+        /* Phone Number Section */
+        .phone-section {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px var(--shadow-color);
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+        
+        .phone-section h2 {
+            color: var(--dark-text);
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+        
+        .phone-section p {
+            color: var(--light-text);
+            margin-bottom: 1.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        
+        .phone-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+        
+        .phone-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 1rem;
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            font-size: 1rem;
+            color: var(--dark-text);
+            background-color: var(--card-bg);
+        }
+        
+        .phone-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .method-selector {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .method-option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.8rem 1.5rem;
+            background-color: rgba(52, 152, 219, 0.1);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .method-option:hover {
+            background-color: rgba(52, 152, 219, 0.2);
+        }
+        
+        .method-option.selected {
+            background-color: rgba(52, 152, 219, 0.3);
+            border-color: var(--primary-blue);
+        }
+        
+        .method-icon {
+            font-size: 1.2rem;
+        }
+        
+        .whatsapp-icon {
+            color: #25D366;
+        }
+        
+        .sms-icon {
+            color: var(--primary-blue);
+        }
+        
+        .tap-button {
+            background: var(--gradient-bg);
+            color: white;
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+            margin-top: 1rem;
+        }
+        
+        .tap-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(52, 152, 219, 0.5);
+        }
+        
+        /* Surgery Explanation Section */
+        .explanation-section {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px var(--shadow-color);
+            margin-bottom: 2.5rem;
+            display: none;
+        }
+        
+        .explanation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .explanation-header h2 {
+            color: var(--dark-text);
+            font-size: 1.8rem;
+        }
+        
+        .language-selector {
+            position: relative;
+        }
+        
+        .language-dropdown {
+            background-color: var(--card-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            padding: 0.8rem 1.2rem;
+            color: var(--dark-text);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            min-width: 180px;
+        }
+        
+        .language-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: var(--card-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            margin-top: 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 10px 25px var(--shadow-color);
+        }
+        
+        .language-item {
+            padding: 0.8rem 1.2rem;
+            color: var(--dark-text);
+            cursor: pointer;
+            border-bottom: 1px solid var(--input-border);
+            transition: background-color 0.2s ease;
+        }
+        
+        .language-item:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .language-item.active {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+        
+        .explanation-content {
+            line-height: 1.7;
+            color: var(--dark-text);
+            font-size: 1.1rem;
+        }
+        
+        .explanation-section h3 {
+            color: var(--primary-blue);
+            margin: 1.5rem 0 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .explanation-section p {
+            margin-bottom: 1rem;
+        }
+        
+        .explanation-section ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .explanation-section li {
+            margin-bottom: 0.5rem;
+            color: var(--light-text);
+        }
+        
+        .llama-model-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--gradient-bg);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            background: var(--gradient-bg);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(52, 152, 219, 0.5);
+        }
+        
+        .action-btn.secondary {
+            background-color: #ecf0f1;
+            color: var(--dark-text);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .action-btn.secondary:hover {
+            background-color: #d5dbdb;
+        }
+        
+        /* Popup Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            text-align: center;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--light-text);
+            transition: color 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            color: var(--dark-text);
+        }
+        
+        .modal-icon {
+            font-size: 3.5rem;
+            color: var(--success-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-title {
+            color: var(--dark-text);
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+        
+        .modal-message {
+            color: var(--light-text);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .modal-btn {
+            background: var(--gradient-bg);
+            color: white;
+            border: none;
+            padding: 0.9rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+        }
+        
+        .modal-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--input-border);
+            color: var(--light-text);
+            font-size: 0.9rem;
+        }
+        
+        .footer-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            background-color: rgba(52, 152, 219, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--dark-text);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+            
+            .header-controls {
+                justify-content: center;
+            }
+            
+            .page-title h1 {
+                font-size: 1.8rem;
+            }
+            
+            .database-visual {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .phone-input {
+                min-width: 100%;
+            }
+            
+            .explanation-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .language-dropdown {
+                min-width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .logo-text {
+                font-size: 1.8rem;
+            }
+            
+            .page-title h1 {
+                font-size: 1.6rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-container">
+                <i class="fas fa-procedures logo-icon"></i>
+                <h1 class="logo-text">LlamaCare</h1>
+            </div>
+            
+            <div class="header-controls">
+                <div class="patient-info">
+                    <div class="patient-avatar" id="patientAvatar">RS</div>
+                    <div class="patient-name" id="patientName">Rearabetswe Sons</div>
+                </div>
+                
+                <button class="mode-toggle" id="modeToggle">
+                    <i class="fas fa-moon"></i> Dark Mode
+                </button>
+            </div>
+        </header>
+        
+        <!-- Page Title -->
+        <div class="page-title">
+            <h1>Pre-op Personalized Preparation</h1>
+            <p>Your personalized surgery preparation plan with reminders and procedure explanation</p>
+        </div>
+        
+        <!-- Database Visualization -->
+        <div class="database-section">
+            <h2>Your Surgery Information</h2>
+            <div class="database-visual">
+                <div class="db-record">
+                    <div class="db-label">Patient ID</div>
+                    <div class="db-value" id="patientId">LLC-2025-0427</div>
+                    
+                    <div class="db-label">Patient Name</div>
+                    <div class="db-value" id="dbPatientName">Rearabetswe Sons</div>
+                </div>
+                
+                <div class="db-record highlight">
+                    <div class="db-label">Procedure Type</div>
+                    <div class="db-value procedure" id="procedureType">Laparoscopic Cholecystectomy</div>
+                    
+                    <div class="db-label">Booked Procedure</div>
+                    <div class="db-value" id="bookedProcedure">Gallbladder Removal Surgery</div>
+                </div>
+                
+                <div class="db-record">
+                    <div class="db-label">Date & Time</div>
+                    <div class="db-value time" id="surgeryDateTime">May 15, 2025 at 08:30 AM</div>
+                    
+                    <div class="db-label">Surgery Location</div>
+                    <div class="db-value" id="surgeryLocation">Main Hospital - Operating Theater 3</div>
+                </div>
+                
+                <div class="db-record">
+                    <div class="db-constraints">
+                        <div class="db-label">Important Constraints</div>
+                        <ul class="constraint-list">
+                            <li><i class="fas fa-exclamation-triangle"></i> No food after midnight before surgery</li>
+                            <li><i class="fas fa-exclamation-triangle"></i> Clear liquids only up to 4 hours before</li>
+                            <li><i class="fas fa-exclamation-triangle"></i> Stop blood thinners 5 days before</li>
+                            <li><i class="fas fa-exclamation-triangle"></i> Arrange for someone to drive you home</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Phone Number Section -->
+        <div class="phone-section" id="phoneSection">
+            <h2>Stay Prepared with Reminders</h2>
+            <p>Add your phone number to receive WhatsApp or SMS reminders about your surgery preparation and countdown to surgery date.</p>
+            
+            <div class="phone-form">
+                <div class="input-group">
+                    <input type="tel" class="phone-input" id="phoneNumber" placeholder="Enter your phone number" required>
+                </div>
+                
+                <div class="method-selector">
+                    <div class="method-option" id="whatsappOption">
+                        <i class="fab fa-whatsapp method-icon whatsapp-icon"></i>
+                        <span>WhatsApp</span>
+                    </div>
+                    
+                    <div class="method-option selected" id="smsOption">
+                        <i class="fas fa-sms method-icon sms-icon"></i>
+                        <span>SMS</span>
+                    </div>
+                </div>
+                
+                <button class="tap-button" id="submitPhoneBtn">
+                    <i class="fas fa-mobile-alt"></i> Tap to Add Phone Number
+                </button>
+            </div>
+        </div>
+        
+        <!-- Surgery Explanation Section -->
+        <div class="explanation-section" id="explanationSection">
+            <div class="explanation-header">
+                <h2>Surgery Procedure Explanation</h2>
+                
+                <div class="language-selector">
+                    <div class="language-dropdown" id="languageDropdown">
+                        <i class="fas fa-language"></i>
+                        <span id="selectedLanguage">English</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    
+                    <div class="language-list" id="languageList">
+                        <div class="language-item active" data-lang="en">English</div>
+                        <div class="language-item" data-lang="nr">isiNdebele</div>
+                        <div class="language-item" data-lang="zu">isiZulu</div>
+                        <div class="language-item" data-lang="xh">isiXhosa</div>
+                        <div class="language-item" data-lang="nso">Sepedi</div>
+                        <div class="language-item" data-lang="st">Sesotho</div>
+                        <div class="language-item" data-lang="tn">Setswana</div>
+                        <div class="language-item" data-lang="ss">siSwati</div>
+                        <div class="language-item" data-lang="ve">Tshivenda</div>
+                        <div class="language-item" data-lang="ts">Xitsonga</div>
+                        <div class="language-item" data-lang="af">Afrikaans</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="llama-model-badge">
+                <i class="fas fa-robot"></i> Powered by LlamaCare AI Model v3.1
+            </div>
+            
+            <div class="explanation-content" id="explanationContent">
+                <!-- English explanation by default -->
+                <h3>Why You Need This Surgery</h3>
+                <p>Based on your medical records and the symptoms you reported (recurrent abdominal pain, especially after meals, and ultrasound showing gallstones), you need this surgery to remove your gallbladder. The gallbladder stores bile that helps digest fats, but gallstones can block bile flow, causing pain, inflammation, and potential complications like infection or pancreatitis.</p>
+                
+                <h3>How the Surgery Will Be Performed</h3>
+                <p>You will have laparoscopic surgery, which means the surgeon will make several small cuts (incisions) in your abdomen instead of one large cut. Through these small openings, they will insert a tiny camera and special surgical tools to carefully remove your gallbladder.</p>
+                
+                <h3>What to Expect During Surgery</h3>
+                <ul>
+                    <li>You will receive general anesthesia, so you'll be asleep and won't feel any pain during the procedure.</li>
+                    <li>The surgeon will inflate your abdomen with gas to create space to see and work.</li>
+                    <li>Using the camera as a guide, the surgeon will locate, separate, and remove your gallbladder.</li>
+                    <li>The surgery typically takes 1-2 hours.</li>
+                </ul>
+                
+                <h3>After the Surgery</h3>
+                <p>You will wake up in the recovery room where nurses will monitor you. Most patients go home the same day or after one night in the hospital. You may have some shoulder pain from the gas used during surgery, but this usually goes away in 1-2 days. You can return to normal activities within 1-2 weeks.</p>
+                
+                <h3>Benefits of This Approach</h3>
+                <ul>
+                    <li>Less pain after surgery compared to open surgery</li>
+                    <li>Smaller scars that heal better</li>
+                    <li>Shorter hospital stay</li>
+                    <li>Faster return to normal activities</li>
+                    <li>Lower risk of infection</li>
+                </ul>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="action-btn" id="finishedReadingBtn">
+                    <i class="fas fa-check-circle"></i> Finished Reading
+                </button>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer>
+            <p>LlamaCare &copy; 2025. "Where understanding meets comfort"</p>
+            <div class="footer-badges">
+                <span class="badge">Personalized Care</span>
+                <span class="badge">AI-Powered Explanations</span>
+                <span class="badge">Multilingual Support</span>
+                <span class="badge">Secure Database</span>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Phone Success Modal -->
+    <div class="modal" id="phoneSuccessModal">
+        <div class="modal-content">
+            <div class="close-modal" id="closePhoneModal">&times;</div>
+            <div class="modal-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3 class="modal-title">Phone Number Added Successfully!</h3>
+            <p class="modal-message">
+                Your phone number has been safely added to our database. You will now receive reminders about your surgery preparation and countdown to your surgery date.
+            </p>
+            <button class="modal-btn" id="viewExplanationBtn">View Surgery Explanation</button>
+        </div>
+    </div>
+    
+    <!-- Send Explanation Modal -->
+    <div class="modal" id="sendExplanationModal">
+        <div class="modal-content">
+            <div class="close-modal" id="closeSendModal">&times;</div>
+            <div class="modal-icon">
+                <i class="fas fa-question-circle"></i>
+            </div>
+            <h3 class="modal-title">Send Explanation to Your Phone?</h3>
+            <p class="modal-message">
+                Would you like us to send this surgery explanation to the phone number you provided? This way you can review it anytime.
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem;">
+                <button class="modal-btn" id="sendYesBtn" style="background: var(--success-color);">Yes, Send It</button>
+                <button class="modal-btn" id="sendNoBtn" style="background-color: #ecf0f1; color: var(--dark-text);">No, Thank You</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Thank You Modal -->
+    <div class="modal" id="thankYouModal">
+        <div class="modal-content">
+            <div class="close-modal" id="closeThankYouModal">&times;</div>
+            <div class="modal-icon">
+                <i class="fas fa-heart"></i>
+            </div>
+            <h3 class="modal-title">Thank You!</h3>
+            <div class="modal-message" id="thankYouMessage">
+                Thank you for using the Pre-op Personalized Preparation Model. We hope you received all the understanding you wanted and we wish you all the best of luck with your surgery!
+            </div>
+            <button class="modal-btn" id="closeThankYouBtn" onclick="window.location.href='ToContinueBoard.html'">Close</button>
+        </div>
+    </div>
+    
+    <script>
+        // ===== DATABASE INITIALIZATION - Add this to ALL pages =====
+// This should be added at the beginning of each page's script section
+
+// Function to get current patient from database
+function getCurrentPatient() {
+    // First try to get from localStorage
+    const savedPatient = localStorage.getItem('llamacare_current_patient');
+    
+    if (savedPatient) {
+        return savedPatient;
+    }
+    
+    // If no saved patient, use the random selection from the array
+    const patientNames = ["Rearabetswe Sons", "Neo Letswalo", "Enoch Emmanuel", "Kamogelo Mvemve", "Tinyiko Selamolela"];
+    const randomIndex = Math.floor(Math.random() * patientNames.length);
+    const randomPatient = patientNames[randomIndex];
+    
+    // Save this random patient for consistency across the session
+    localStorage.setItem('llamacare_current_patient', randomPatient);
+    
+    return randomPatient;
+}
+
+// Function to get patient data from database
+function getPatientData(patientName) {
+    const patientList = JSON.parse(localStorage.getItem('llamacare_patient_list') || '[]');
+    
+    // Find patient by name
+    const patientData = patientList.find(patient => 
+        patient.name.toLowerCase() === patientName.toLowerCase()
+    );
+    
+    if (patientData) {
+        return patientData;
+    }
+    
+    // If not found in registration data, return default data
+    return {
+        name: patientName,
+        id: 'LLC-' + Math.floor(1000 + Math.random() * 9000),
+        registrationDate: new Date().toISOString().split('T')[0]
+    };
+}
+
+// Function to get initials from a full name
+function getInitials(fullName) {
+    if (!fullName) return 'LL';
+    
+    return fullName
+        .split(' ')
+        .map(word => word[0])
+        .join('')
+        .toUpperCase();
+}
+
+// Function to update patient info on page
+function updatePatientInfoOnPage() {
+    const patientName = getCurrentPatient();
+    const patientInitials = getInitials(patientName);
+    const patientData = getPatientData(patientName);
+    
+    // Update patient name on page (if element exists)
+    const patientNameElement = document.getElementById('patientName');
+    if (patientNameElement) {
+        patientNameElement.textContent = patientName;
+    }
+    
+    // Update patient avatar with initials (if element exists)
+    const patientAvatarElement = document.getElementById('patientAvatar');
+    if (patientAvatarElement) {
+        patientAvatarElement.textContent = patientInitials;
+    }
+    
+    // Update patient ID (if element exists)
+    const patientIdElement = document.getElementById('patientId');
+    if (patientIdElement && patientData.id) {
+        patientIdElement.textContent = patientData.id;
+    }
+    
+    // Update database patient name (if element exists)
+    const dbPatientNameElement = document.getElementById('dbPatientName');
+    if (dbPatientNameElement) {
+        dbPatientNameElement.textContent = patientName;
+    }
+    
+    // Update notification patient name (if element exists)
+    const notificationPatientElement = document.getElementById('notificationPatientName');
+    if (notificationPatientElement) {
+        notificationPatientElement.textContent = patientName;
+    }
+    
+    console.log(`Current patient: ${patientName} (${patientInitials})`, patientData);
+    return patientName;
+}
+
+// Call this function when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Update patient info
+    updatePatientInfoOnPage();
+    
+    // Rest of your existing DOMContentLoaded code...
+    // [Keep all your existing code here]
+});
+        
+        // Patient data simulation
+        const patientData = {
+            "Rearabetswe Sons": {
+                id: "LLC-2025-0427",
+                procedure: "Laparoscopic Cholecystectomy",
+                bookedProcedure: "Gallbladder Removal Surgery",
+                dateTime: "May 15, 2025 at 08:30 AM",
+                location: "Main Hospital - Operating Theater 3",
+                reason: "Recurrent abdominal pain and gallstones identified on ultrasound"
+            },
+            "Neo Letswalo": {
+                id: "LLC-2025-0512",
+                procedure: "Arthroscopic Knee Surgery",
+                bookedProcedure: "Knee Meniscus Repair",
+                dateTime: "May 22, 2025 at 10:00 AM",
+                location: "Orthopedic Center - Theater 2",
+                reason: "Persistent knee pain and limited mobility from sports injury"
+            },
+            "Enoch Emmanuel": {
+                id: "LLC-2025-0489",
+                procedure: "Cataract Surgery",
+                bookedProcedure: "Lens Replacement Surgery",
+                dateTime: "June 5, 2025 at 09:15 AM",
+                location: "Eye Clinic - Theater 1",
+                reason: "Progressive vision impairment affecting daily activities"
+            },
+            "Kamogelo Mvemve": {
+                id: "LLC-2025-0533",
+                procedure: "Appendectomy",
+                bookedProcedure: "Appendix Removal Surgery",
+                dateTime: "May 18, 2025 at 02:45 PM",
+                location: "Emergency Surgical Unit",
+                reason: "Recurrent appendicitis episodes"
+            },
+            "Tinyiko Selamolela": {
+                id: "LLC-2025-0496",
+                procedure: "Tonsillectomy",
+                bookedProcedure: "Tonsil Removal Surgery",
+                dateTime: "June 12, 2025 at 11:30 AM",
+                location: "ENT Department - Theater 4",
+                reason: "Chronic tonsillitis and sleep apnea"
+            }
+        };
+        
+        // Surgery explanations in different languages (simplified for demo)
+        const surgeryExplanations = {
+            "en": {
+                title: "Surgery Procedure Explanation",
+                why: "Why You Need This Surgery",
+                whyText: "Based on your medical records and the symptoms you reported (recurrent abdominal pain, especially after meals, and ultrasound showing gallstones), you need this surgery to remove your gallbladder. The gallbladder stores bile that helps digest fats, but gallstones can block bile flow, causing pain, inflammation, and potential complications like infection or pancreatitis.",
+                how: "How the Surgery Will Be Performed",
+                howText: "You will have laparoscopic surgery, which means the surgeon will make several small cuts (incisions) in your abdomen instead of one large cut. Through these small openings, they will insert a tiny camera and special surgical tools to carefully remove your gallbladder.",
+                expect: "What to Expect During Surgery",
+                expectList: [
+                    "You will receive general anesthesia, so you'll be asleep and won't feel any pain during the procedure.",
+                    "The surgeon will inflate your abdomen with gas to create space to see and work.",
+                    "Using the camera as a guide, the surgeon will locate, separate, and remove your gallbladder.",
+                    "The surgery typically takes 1-2 hours."
+                ],
+                after: "After the Surgery",
+                afterText: "You will wake up in the recovery room where nurses will monitor you. Most patients go home the same day or after one night in the hospital. You may have some shoulder pain from the gas used during surgery, but this usually goes away in 1-2 days. You can return to normal activities within 1-2 weeks.",
+                benefits: "Benefits of This Approach",
+                benefitsList: [
+                    "Less pain after surgery compared to open surgery",
+                    "Smaller scars that heal better",
+                    "Shorter hospital stay",
+                    "Faster return to normal activities",
+                    "Lower risk of infection"
+                ]
+            },
+            "zu": {
+                title: "Incazelo Yenqubo Yokuhlinzwa",
+                why: "Kungani Udinga Lokhu Kuhlinzwa",
+                whyText: "Ngokusekelwe emlandweni wakho wezokwelapha kanye nezimpawu ozibikile (ubuhlungu besisu obuphindaphindayo, ikakhulukazi ngemva kokudla, kanye nesicanucanu esibonisa amatshe ensongo), udinga lokhu kuhlinzwa ukuze kususwe insongo yakho. Insongo igcina inyongo esiza ekugayweni kwamafutha, kepha amatshe ensongo angavimba ukugeleza kwenkolo, okubangela ubuhlungu, ukuvuvukala, kanye nezingqinamba ezingase zibe khona njengokutheleleka noma i-pancreatitis.",
+                how: "Indlela Okuzohlinzwa Ngayo",
+                howText: "Uzoba nokuhlinzwa kwe-laparoscopic, okusho ukuthi udokotela ozohlinza uzokwenza izinqamulezi ezimbalwa ezincane esiswini sakho esikhundleni sesinye esikhulu. Ngalezi zindawo ezincane, bazofaka ikhamera encane namathuluzi okuhlinza akhethekile ukuze basuse insongo yakho ngokucophelela.",
+                expect: "Okulindelekile Ngesikhathi Sokuhlinzwa",
+                expectList: [
+                    "Uzothola i-anesthesia ejwayelekile, ngakho-ke uzolala futhi ngeke uzwe ubuhlungu ngesikhathi senqubo.",
+                    "Udokotela ozohlinza uzogcwalisa isisu sakho ngegesi ukuze kwakhe isikhala sokubona nokusebenza.",
+                    "Sebenzisa ikhamera njengomhlahlandlela, udokotela ozohlinza uzothola, ahlukanise, futhi asuse insongo yakho.",
+                    "Ukuhlinzwa kuvame ukuthatha imizuzu eyi-1-2."
+                ],
+                after: "Ngemva Kokuhlinzwa",
+                afterText: "Uzovuka egumbini lokululama lapho omesi bazokugada khona. Iningi leziguli lihamba liya ekhaya ngosuku olufanayo noma ngemva kobusuku obubodwa esibhedlela. Ungaba nobuhlungu obuthile behlombe obuvela kugesi eyasetshenziswa ngesikhathi sokuhlinzwa, kodwa lokhu kuvame ukuphela ezinsukwini ezingu-1-2. Ungabuyela emisebenzini evamile phakathi kwamasonto angu-1-2.",
+                benefits: "Izinzuzo Zale Ndlela",
+                benefitsList: [
+                    "Ubuhlungu obuncane ngemva kokuhlinzwa uma kuqhathaniswa nokuhlinzwa okuvulekile",
+                    "Amabala amancane aphola kangcono",
+                    "Ukuhlala isikhathi esifushane esibhedlela",
+                    "Ukubuyela masinyane emisebenzini evamile",
+                    "Ubungozi obuncane bokutheleleka"
+                ]
+            },
+            "af": {
+                title: "Verduideliking van die Operasieprosedure",
+                why: "Waarom U Hierdie Operasie Nodig Het",
+                whyText: "Gebaseer op u mediese rekords en die simptome wat u gerapporteer het (herhalende buikpyn, veral na maaltye, en ultraklank wat galstene toon), het u hierdie operasie nodig om u galblaas te verwyder. Die galblaas stoor gal wat help met die vertering van vette, maar galstene kan galvloei blokkeer, wat pyn, inflammasie en moontlike komplikasies soos infeksie of pankreatitis veroorsaak.",
+                how: "Hoe die Operasie Uitgevoer Sal Word",
+                howText: "U sal laparoskopiese chirurgie hê, wat beteken dat die chirurg verskeie klein snitte (insnydings) in u buik sal maak in plaas van een groot snit. Deur hierdie klein openinge sal hulle 'n klein kamera en spesiale chirurgiese gereedskap invoer om u galblaas versigtig te verwyder.",
+                expect: "Wat om Tydens die Operasie te Verwag",
+                expectList: [
+                    "U sal algemene narkose ontvang, so u sal slaap en geen pyn tydens die prosedure voel nie.",
+                    "Die chirurg sal u buik met gas opblaas om ruimte te skep om te sien en te werk.",
+                    "Met behulp van die kamera as 'n gids, sal die chirurg u galblaas opspoor, skei en verwyder.",
+                    "Die operasie duur gewoonlik 1-2 uur."
+                ],
+                after: "Na die Operasie",
+                afterText: "U sal wakker word in die herstelkamer waar verpleegsters u sal monitor. Die meeste pasiënte gaan dieselfde dag of na een nag in die hospitaal huis toe. U mag 'n bietjie skouerpyn hê van die gas wat tydens die operasie gebruik is, maar dit gaan gewoonlik weg binne 1-2 dae. U kan binne 1-2 weke terugkeer na normale aktiwiteite.",
+                benefits: "Voordele van Hierdie Benadering",
+                benefitsList: [
+                    "Minder pyn na die operasie in vergelyking met oop chirurgie",
+                    "Kleinmerke wat beter genees",
+                    "Korter hospitaalverblyf",
+                    "Vinniger terugkeer na normale aktiwiteite",
+                    "Laer risiko van infeksie"
+                ]
+            }
+        };
+        
+        // Current state
+        let currentPatient = "";
+        let currentLanguage = "en";
+        let isDarkMode = false;
+        let phoneNumber = "";
+        let notificationMethod = "sms";
+        
+        // Function to get initials from a full name
+        function getInitials(fullName) {
+            return fullName
+                .split(' ')
+                .map(word => word[0])
+                .join('')
+                .toUpperCase();
+        }
+        
+        // Function to select a random patient
+        function getRandomPatient() {
+            const randomIndex = Math.floor(Math.random() * patientNames.length);
+            return patientNames[randomIndex];
+        }
+        
+        // Function to update patient info
+        function updatePatientInfo() {
+            currentPatient = getRandomPatient();
+            const patientInitials = getInitials(currentPatient);
+            const patientInfo = patientData[currentPatient] || patientData["Rearabetswe Sons"];
+            
+            // Update the patient name
+            document.getElementById('patientName').textContent = currentPatient;
+            document.getElementById('dbPatientName').textContent = currentPatient;
+            
+            // Update the patient avatar with initials
+            document.getElementById('patientAvatar').textContent = patientInitials;
+            
+            // Update patient data in the database visualization
+            document.getElementById('patientId').textContent = patientInfo.id;
+            document.getElementById('procedureType').textContent = patientInfo.procedure;
+            document.getElementById('bookedProcedure').textContent = patientInfo.bookedProcedure;
+            document.getElementById('surgeryDateTime').textContent = patientInfo.dateTime;
+            document.getElementById('surgeryLocation').textContent = patientInfo.location;
+            
+            console.log(`Current patient: ${currentPatient} (${patientInitials})`);
+        }
+        
+        // Function to toggle dark mode
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark-mode', isDarkMode);
+            
+            const modeToggle = document.getElementById('modeToggle');
+            if (isDarkMode) {
+                modeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            } else {
+                modeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+            }
+            
+            // Save preference to localStorage
+            localStorage.setItem('darkMode', isDarkMode);
+        }
+        
+        // Function to populate surgery explanation
+        function populateSurgeryExplanation(lang) {
+            const content = document.getElementById('explanationContent');
+            const explanation = surgeryExplanations[lang] || surgeryExplanations['en'];
+            
+            content.innerHTML = `
+                <h3>${explanation.why}</h3>
+                <p>${explanation.whyText}</p>
+                
+                <h3>${explanation.how}</h3>
+                <p>${explanation.howText}</p>
+                
+                <h3>${explanation.expect}</h3>
+                <ul>
+                    ${explanation.expectList.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+                
+                <h3>${explanation.after}</h3>
+                <p>${explanation.afterText}</p>
+                
+                <h3>${explanation.benefits}</h3>
+                <ul>
+                    ${explanation.benefitsList.map(item => `<li>${item}</li>`).join('')}
+                </ul>
+            `;
+        }
+        
+        // Function to show language dropdown
+        function toggleLanguageDropdown() {
+            const languageList = document.getElementById('languageList');
+            const isVisible = languageList.style.display === 'block';
+            languageList.style.display = isVisible ? 'none' : 'block';
+        }
+        
+        // Function to change language
+        function changeLanguage(langCode, langName) {
+            currentLanguage = langCode;
+            
+            // Update selected language display
+            document.getElementById('selectedLanguage').textContent = langName;
+            
+            // Update active state in language list
+            document.querySelectorAll('.language-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-lang') === langCode) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Close dropdown
+            document.getElementById('languageList').style.display = 'none';
+            
+            // Repopulate explanation with new language
+            populateSurgeryExplanation(langCode);
+            
+            console.log(`Language changed to: ${langName} (${langCode})`);
+        }
+        
+        // Function to save phone number to database
+        function savePhoneNumberToDatabase() {
+            // In a real application, this would send data to a backend API
+            const patientInfo = patientData[currentPatient] || patientData["Rearabetswe Sons"];
+            
+            // Create a database record (simulated)
+            const dbRecord = {
+                patientId: patientInfo.id,
+                patientName: currentPatient,
+                phoneNumber: phoneNumber,
+                notificationMethod: notificationMethod,
+                surgeryDate: patientInfo.dateTime,
+                addedAt: new Date().toISOString()
+            };
+            
+            // Save to localStorage for simulation
+            localStorage.setItem('patientPhoneRecord', JSON.stringify(dbRecord));
+            
+            console.log('Phone number saved to database:', dbRecord);
+            return true;
+        }
+        
+        // Function to send explanation to phone
+        function sendExplanationToPhone() {
+            // In a real application, this would trigger an SMS/WhatsApp API
+            console.log(`Sending surgery explanation to ${phoneNumber} via ${notificationMethod}`);
+            
+            // Simulate sending
+            setTimeout(() => {
+                console.log('Explanation sent successfully!');
+            }, 1000);
+            
+            return true;
+        }
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set random patient
+            updatePatientInfo();
+            
+            // Check for saved dark mode preference
+            const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+            if (savedDarkMode) {
+                isDarkMode = true;
+                document.body.classList.add('dark-mode');
+                document.getElementById('modeToggle').innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            }
+            
+            // Set up event listeners
+            
+            // Dark mode toggle
+            document.getElementById('modeToggle').addEventListener('click', toggleDarkMode);
+            
+            // Notification method selection
+            document.getElementById('whatsappOption').addEventListener('click', function() {
+                document.getElementById('whatsappOption').classList.add('selected');
+                document.getElementById('smsOption').classList.remove('selected');
+                notificationMethod = "whatsapp";
+            });
+            
+            document.getElementById('smsOption').addEventListener('click', function() {
+                document.getElementById('smsOption').classList.add('selected');
+                document.getElementById('whatsappOption').classList.remove('selected');
+                notificationMethod = "sms";
+            });
+            
+            // Submit phone number
+            document.getElementById('submitPhoneBtn').addEventListener('click', function() {
+                const phoneInput = document.getElementById('phoneNumber').value.trim();
+                
+                if (!phoneInput) {
+                    alert('Please enter your phone number');
+                    return;
+                }
+                
+                // Validate phone number (simple validation)
+                const phoneRegex = /^[0-9\+\-\s\(\)]{10,}$/;
+                if (!phoneRegex.test(phoneInput)) {
+                    alert('Please enter a valid phone number');
+                    return;
+                }
+                
+                phoneNumber = phoneInput;
+                
+                // Save to database
+                if (savePhoneNumberToDatabase()) {
+                    // Show success modal
+                    document.getElementById('phoneSuccessModal').style.display = 'flex';
+                }
+            });
+            
+            // View explanation button
+            document.getElementById('viewExplanationBtn').addEventListener('click', function() {
+                // Close phone modal
+                document.getElementById('phoneSuccessModal').style.display = 'none';
+                
+                // Hide phone section
+                document.getElementById('phoneSection').style.display = 'none';
+                
+                // Show explanation section
+                document.getElementById('explanationSection').style.display = 'block';
+                
+                // Scroll to explanation
+                document.getElementById('explanationSection').scrollIntoView({ behavior: 'smooth' });
+                
+                // Populate with English by default
+                populateSurgeryExplanation('en');
+            });
+            
+            // Language dropdown toggle
+            document.getElementById('languageDropdown').addEventListener('click', toggleLanguageDropdown);
+            
+            // Language selection
+            document.querySelectorAll('.language-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const langCode = this.getAttribute('data-lang');
+                    const langName = this.textContent;
+                    changeLanguage(langCode, langName);
+                });
+            });
+            
+            // Close language dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.language-selector')) {
+                    document.getElementById('languageList').style.display = 'none';
+                }
+            });
+            
+            // Finished reading button
+            document.getElementById('finishedReadingBtn').addEventListener('click', function() {
+                // Show send explanation modal
+                document.getElementById('sendExplanationModal').style.display = 'flex';
+            });
+            
+            // Send explanation - Yes
+            document.getElementById('sendYesBtn').addEventListener('click', function() {
+                // Send explanation to phone
+                if (sendExplanationToPhone()) {
+                    // Close send modal
+                    document.getElementById('sendExplanationModal').style.display = 'none';
+                    
+                    // Show thank you modal with sending confirmation
+                    document.getElementById('thankYouMessage').innerHTML = `
+                        Thank you for using the Pre-op Personalized Preparation Model.<br><br>
+                        The surgery explanation has been sent to your phone via ${notificationMethod}.<br><br>
+                        We hope you received all the understanding you wanted and we wish you all the best of luck with your surgery!
+                    `;
+                    document.getElementById('thankYouModal').style.display = 'flex';
+                }
+            });
+            
+            // Send explanation - No
+            document.getElementById('sendNoBtn').addEventListener('click', function() {
+                // Close send modal
+                document.getElementById('sendExplanationModal').style.display = 'none';
+                
+                // Show thank you modal without sending confirmation
+                document.getElementById('thankYouMessage').innerHTML = `
+                    Thank you for using the Pre-op Personalized Preparation Model.<br><br>
+                    We hope you received all the understanding you wanted and we wish you all the best of luck with your surgery!
+                `;
+                document.getElementById('thankYouModal').style.display = 'flex';
+            });
+            
+            // Close modals
+            document.getElementById('closePhoneModal').addEventListener('click', function() {
+                document.getElementById('phoneSuccessModal').style.display = 'none';
+            });
+            
+            document.getElementById('closeSendModal').addEventListener('click', function() {
+                document.getElementById('sendExplanationModal').style.display = 'none';
+            });
+            
+            document.getElementById('closeThankYouModal').addEventListener('click', function() {
+                document.getElementById('thankYouModal').style.display = 'none';
+            });
+            
+            document.getElementById('closeThankYouBtn').addEventListener('click', function() {
+                document.getElementById('thankYouModal').style.display = 'none';
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal')) {
+                    e.target.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

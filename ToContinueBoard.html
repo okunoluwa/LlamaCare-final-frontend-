@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LlamaCare - Patient Assistance</title>
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+
+         /* Color variables for light mode */
+        :root {
+            --primary-blue: #3498db;
+            --secondary-green: #2ecc71;
+            --dark-text: #2c3e50;
+            --light-text: #7f8c8d;
+            --background: #f0f9ff;
+            --white: #ffffff;
+            --card-bg: #ffffff;
+            --input-border: #ecf0f1;
+            --input-bg: #f8fafc;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --shadow-blue: rgba(52, 152, 219, 0.4);
+            --urgent-red: #e74c3c;
+            --urgent-red-light: #fadbd8;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --info: #3498db;
+        }
+        
+        /* Dark mode variables */
+        .dark-mode {
+            --primary-blue: #5dade2;
+            --secondary-green: #58d68d;
+            --dark-text: #ecf0f1;
+            --light-text: #bdc3c7;
+            --background: #1a252f;
+            --white: #2c3e50;
+            --card-bg: #34495e;
+            --input-border: #4a6278;
+            --input-bg: #2c3e50;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --shadow-blue: rgba(91, 173, 226, 0.4);
+            --urgent-red: #f1948a;
+            --urgent-red-light: #78281f;
+            --success: #58d68d;
+            --warning: #f8c471;
+            --info: #5dade2;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+        
+        /* Color variables matching the homepage */
+        :root {
+            --primary-blue: #3498db;
+            --secondary-green: #2ecc71;
+            --dark-text: #2c3e50;
+            --light-text: #7f8c8d;
+            --background: #f0f9ff;
+            --white: #ffffff;
+            --input-border: #ecf0f1;
+            --input-focus: #3498db;
+            --card-bg: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --gradient-bg: linear-gradient(to right, #3498db, #2ecc71);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--dark-text);
+            min-height: 100vh;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(176, 224, 230, 0.3) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(135, 206, 235, 0.3) 0%, transparent 20%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            margin-bottom: 2.5rem;
+            border-bottom: 2px solid var(--input-border);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            flex: 1;
+            justify-content: left;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            background: var(--gradient-bg);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .logo-text {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-text);
+            letter-spacing: 1px;
+        }
+
+         .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: linear-gradient(to right, var(--primary-blue), var(--secondary-green));
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px var(--shadow-blue);
+            transition: transform 0.3s;
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        .patient-info {
+            position: absolute;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .patient-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gradient-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .patient-name {
+            font-weight: 600;
+            color: var(--dark-text);
+            font-size: 1.1rem;
+        }
+        
+        /* Main Content */
+        .page-title {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .page-title h1 {
+            font-size: 2.2rem;
+            color: var(--dark-text);
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title p {
+            font-size: 1.2rem;
+            color: var(--light-text);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        /* Options Grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .option-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            box-shadow: 0 10px 25px var(--shadow-color);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            height: 100%;
+        }
+        
+        .option-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+            border-color: var(--primary-blue);
+        }
+        
+        .option-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1.5rem;
+            background: var(--gradient-bg);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .option-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--dark-text);
+            margin-bottom: 1rem;
+        }
+        
+        .option-summary {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 1.5rem;
+            padding: 0.5rem 1rem;
+            background-color: rgba(52, 152, 219, 0.1);
+            border-radius: 50px;
+        }
+        
+        .option-description {
+            color: var(--light-text);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+        
+        .select-btn {
+            background: var(--gradient-bg);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .select-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.5);
+        }
+        
+        /* Form/Table View (Alternative Layout) */
+        .options-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 3rem;
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px var(--shadow-color);
+            display: none; /* Hidden by default, can be toggled */
+        }
+        
+        .options-table th {
+            background: var(--gradient-bg);
+            color: white;
+            padding: 1.5rem;
+            text-align: left;
+            font-size: 1.3rem;
+        }
+        
+        .options-table td {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--input-border);
+        }
+        
+        .options-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .option-row:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+        
+        .table-option-title {
+            font-weight: 700;
+            color: var(--dark-text);
+            font-size: 1.2rem;
+        }
+        
+        .table-option-summary {
+            color: var(--primary-blue);
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        /* View Toggle */
+        .view-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+        
+        .view-btn {
+            background-color: #ecf0f1;
+            color: var(--dark-text);
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .view-btn.active {
+            background: var(--gradient-bg);
+            color: white;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--input-border);
+            color: var(--light-text);
+            font-size: 0.9rem;
+        }
+        
+        .footer-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            background-color: #ecf0f1;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--dark-text);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+            
+            .patient-info {
+                position: static;
+                justify-content: center;
+            }
+            
+            .logo-text {
+                font-size: 2rem;
+            }
+            
+            .page-title h1 {
+                font-size: 1.8rem;
+            }
+            
+            .page-title p {
+                font-size: 1.1rem;
+                padding: 0 1rem;
+            }
+            
+            .options-grid {
+                grid-template-columns: 1fr;
+                padding: 0 1rem;
+            }
+            
+            .option-card {
+                padding: 2rem 1.5rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .logo-text {
+                font-size: 1.8rem;
+            }
+            
+            .page-title h1 {
+                font-size: 1.6rem;
+            }
+            
+            .option-title {
+                font-size: 1.3rem;
+            }
+            
+            .option-summary {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+    </head>
+    <body>
+        <div class="container">
+            <!-- Header with Logo and Patient Info -->
+            <header class="header">
+                <div class="logo-container">
+                    <i class="fas fa-heartbeat"></i>
+                    <h1 class="logo-text">LlamaCare</h1>
+                </div>
+
+                <div class="patient-info">
+                    <div class="patient-avatar" id="patientAvatar">RS</div>
+                    <div class="patient-name" id="patientName">Rearabetswe
+                        Sons</div>
+                </div>
+                <br>
+                <div><button id="themeToggle" class="theme-toggle"
+                        position="right">🌙</button></div>
+            </header>
+
+            <!-- Page Title -->
+            <div class="page-title">
+                <h1>How Can We Assist You Today?</h1>
+                <p>Select an option below to get the assistance you need</p>
+            </div>
+
+            <!-- View Toggle -->
+            <div class="view-toggle">
+                <button class="view-btn active" id="cardViewBtn">
+                    <i class="fas fa-th-large"></i> Card View
+                </button>
+                <button class="view-btn" id="tableViewBtn">
+                    <i class="fas fa-table"></i> Table View
+                </button>
+            </div>
+
+            <!-- Options Grid (Card View) -->
+            <div class="options-grid" id="cardView">
+                <!-- Option 1 -->
+                <div class="option-card" id="option1">
+                    <div class="option-icon">
+                        <i class="fas fa-file-signature"></i>
+                    </div>
+                    <h3 class="option-title">Form Explanation</h3>
+                    <div class="option-summary">Understand before signing</div>
+                    <p class="option-description">
+                        Get a clear, simple explanation of medical forms and
+                        consent documents before you sign them. We'll help you
+                        understand the terms, conditions, and implications.
+                    </p>
+                    <button class="select-btn" onclick="window.location.href='LingoPrep.html'">
+                        <i class="fas fa-check-circle"></i> Select
+                    </button>
+                </div>
+
+                <!-- Option 2 -->
+                <div class="option-card" id="option2">
+                    <div class="option-icon">
+                        <i class="fas fa-procedures"></i>
+                    </div>
+                    <h3 class="option-title">Procedure Understanding</h3>
+                    <div class="option-summary">Surgery procedure explained
+                        simply</div>
+                    <p class="option-description">
+                        Understand surgical procedures in simple terms. We'll
+                        explain what to expect before, during, and after
+                        surgery, including risks, benefits, and recovery
+                        process.
+                    </p>
+                    <button class="select-btn" onclick="window.location.href='Pre-opPrep.html'">
+                        <i class="fas fa-check-circle"></i> Select
+                    </button>
+                </div>
+
+                <!-- Option 3 -->
+                <div class="option-card" id="option3">
+                    <div class="option-icon">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3 class="option-title">Anxiety Reduction</h3>
+                    <div class="option-summary">Calm down, reduce anxiety</div>
+                    <p class="option-description">
+                        Access guided relaxation techniques, calming exercises,
+                        and anxiety reduction strategies specifically designed
+                        for healthcare settings and medical procedures.
+                    </p>
+                    <button class="select-btn" onclick="window.location.href='AnaesthesiaBuddy.html'">
+                        <i class="fas fa-check-circle"></i> Select
+                    </button>
+                </div>
+
+                <div class="option-card" id="option3">
+                    <div class="option-icon">
+                        <i class="fas fa-first-aid"></i>
+                    </div>
+                    <h3 class="option-title">Post-Op Guidance</h3>
+                    <div class="option-summary">Recovery support and advice</div>
+                    <p class="option-description">
+                        Receive clear instructions and support for your
+                        post-operative care. We'll guide you through wound care,
+                        medication management, activity restrictions, and signs
+                        of complications to watch for.
+                    </p>
+                    <button class="select-btn"  onclick="window.location.href='CareRoom.html'">
+                        <i class="fas fa-check-circle"></i> Select
+                    </button>
+                </div>
+
+                 <div class="option-card" id="option3">
+                    <div class="option-icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                    <h3 class="option-title">Exit LlamaCare</h3>
+                    <div class="option-summary">Patient exit and logout</div>
+                    <p class="option-description">
+                        Safely exit the LlamaCare application and log out of
+                        your patient account. Ensure all your data is saved and
+                        secure before you leave.
+                    </p>
+                    <button class="select-btn"  onclick="window.location.href='logout.html'">
+                        <i class="fas fa-check-circle"></i> Select
+                    </button>
+                </div>
+            </div>
+
+            <!-- Options Table (Hidden by default) -->
+            <table class="options-table" id="tableView">
+                <thead>
+                    <tr>
+                        <th>Option</th>
+                        <th>Summary (4-5 words)</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="option-row" data-option="1">
+                        <td>
+                            <div class="table-option-title">
+                                <i class="fas fa-file-signature"></i> Form
+                                Explanation
+                            </div>
+                        </td>
+                        <td class="table-option-summary">Understand before
+                            signing</td>
+                        <td>
+                            <button class="select-btn" onclick="window.location.href='LingoPrep.html'">
+                                <i class="fas fa-check-circle"></i> Select
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="option-row" data-option="2">
+                        <td>
+                            <div class="table-option-title">
+                                <i class="fas fa-procedures"></i> Procedure
+                                Understanding
+                            </div>
+                        </td>
+                        <td class="table-option-summary">Surgery procedure
+                            explained simply</td>
+                        <td>
+                            <button class="select-btn" onclick="window.location.href='Pre-opPrep.html'">
+                                <i class="fas fa-check-circle" ></i> Select
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="option-row" data-option="3">
+                        <td>
+                            <div class="table-option-title">
+                                <i class="fas fa-heartbeat"></i> Anxiety
+                                Reduction
+                            </div>
+                        </td>
+                        <td class="table-option-summary">Calm down, reduce
+                            anxiety</td>
+                        <td>
+                            <button class="select-btn" onclick="window.location.href='AnaesthesiaBuddy.html'">
+                                <i class="fas fa-check-circle"></i> Select
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="option-row" data-option="3">
+                        <td>
+                            <div class="table-option-title">
+                                <i class="fas fa-heartbeat"></i> Post-Op Guidance
+                            </div>
+                        </td>
+                        <td class="table-option-summary">Recovery support and advice</td>
+                        <td>
+                            <button class="select-btn" onclick="window.location.href='CareRoom.html'">
+                                <i class="fas fa-check-circle"></i> Select
+                            </button>
+                        </td>
+                    </tr>
+                     <tr class="option-row" data-option="3">
+                        <td>
+                            <div class="table-option-title">
+                                <i class="fas fa-heartbeat"></i> Exit LlamaCare
+                            </div>
+                        </td>
+                        <td class="table-option-summary">Patient exit and logout</td>
+                        <td>
+                            <button class="select-btn" onclick="window.location.href='logout.html'">
+                                <i class="fas fa-check-circle"></i> Select
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <footer>
+                <p>LlamaCare &copy; 2025.
+                    "Where understanding meets comfort"</p>
+                <div class="footer-badges">
+                    <span class="badge">HIPAA Compliant</span>
+                    <span class="badge">Secure & Encrypted</span>
+                    <span class="badge">24/7 Support</span>
+                </div>
+            </footer>
+        </div>
+
+        <script>
+
+            // ===== DATABASE INITIALIZATION - Add this to ALL pages =====
+// This should be added at the beginning of each page's script section
+
+// Function to get current patient from database
+function getCurrentPatient() {
+    // First try to get from localStorage
+    const savedPatient = localStorage.getItem('llamacare_current_patient');
+    
+    if (savedPatient) {
+        return savedPatient;
+    }
+    
+    // If no saved patient, use the random selection from the array
+    const patientNames = ["Rearabetswe Sons", "Neo Letswalo", "Enoch Emmanuel", "Kamogelo Mvemve", "Tinyiko Selamolela"];
+    const randomIndex = Math.floor(Math.random() * patientNames.length);
+    const randomPatient = patientNames[randomIndex];
+    
+    // Save this random patient for consistency across the session
+    localStorage.setItem('llamacare_current_patient', randomPatient);
+    
+    return randomPatient;
+}
+
+// Function to get patient data from database
+function getPatientData(patientName) {
+    const patientList = JSON.parse(localStorage.getItem('llamacare_patient_list') || '[]');
+    
+    // Find patient by name
+    const patientData = patientList.find(patient => 
+        patient.name && patient.name.toLowerCase() === patientName.toLowerCase()
+    );
+    
+    if (patientData) {
+        return patientData;
+    }
+    
+    // If not found in registration data, return default data
+    return {
+        name: patientName,
+        id: 'LLC-' + Math.floor(1000 + Math.random() * 9000),
+        registrationDate: new Date().toISOString().split('T')[0]
+    };
+}
+
+// Function to get initials from a full name
+function getInitials(fullName) {
+    if (!fullName) return 'LL';
+    
+    return fullName
+        .split(' ')
+        .map(word => word[0])
+        .join('')
+        .toUpperCase();
+}
+
+// Function to update patient info on page
+function updatePatientInfoOnPage() {
+    const patientName = getCurrentPatient();
+    const patientInitials = getInitials(patientName);
+    const patientData = getPatientData(patientName);
+    
+    console.log("Updating patient info:", patientName);
+    
+    // Update all possible patient name elements
+    const patientElements = [
+        'patientName',           // Main patient name
+        'userName',              // Header user name
+        'dynamicPatientName',    // Banner patient name
+        'dbPatientName',         // Database patient name
+        'notificationPatientName' // Notification patient name
+    ];
+    
+    patientElements.forEach(elementId => {
+        const element = document.getElementById(elementId);
+        if (element) {
+            element.textContent = patientName;
+        }
+    });
+    
+    // Update patient avatar with initials (if element exists)
+    const patientAvatarElement = document.getElementById('patientAvatar');
+    if (patientAvatarElement) {
+        patientAvatarElement.textContent = patientInitials;
+    }
+    
+    // Also check for userAvatar (different naming)
+    const userAvatarElement = document.getElementById('userAvatar');
+    if (userAvatarElement) {
+        userAvatarElement.textContent = patientInitials;
+    }
+    
+    // Update patient ID (if element exists)
+    const patientIdElement = document.getElementById('patientId');
+    if (patientIdElement && patientData.id) {
+        patientIdElement.textContent = patientData.id;
+    }
+    
+    console.log(`Current patient: ${patientName} (${patientInitials})`);
+    return patientName;
+}
+
+// Call this function when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Update patient info FIRST
+    updatePatientInfoOnPage();
+    
+    // Now run the rest of your existing code
+    // Keep all your existing DOMContentLoaded code below this line
+    // ======================================================
+    
+    // Your existing code starts here
+    const patientsCount = document.getElementById('patientsCount');
+    const doctorsCount = document.getElementById('doctorsCount');
+    const appointmentsCount = document.getElementById('appointmentsCount');
+    const continueBtn = document.getElementById('continueBtn');
+
+    /* ==========================
+       GET CURRENT LOGGED-IN PATIENT
+    ========================== */
+    function getRegisteredPatientName() {
+        const keys = [
+            "currentUser",
+            "loggedInUser",
+            "user",
+            "patient",
+            "patientUser"
+        ];
+
+        // Try JSON-based patient objects first
+        for (const key of keys) {
+            try {
+                const item = localStorage.getItem(key);
+                if (!item) continue;
+                const parsed = JSON.parse(item);
+                if (parsed?.name) return parsed.name;
+            } catch (e) {}
+        }
+
+        // Fallback simple stored name
+        const name = localStorage.getItem("patientName");
+        return name || "Unknown Patient";
+    }
+    
+    const finalPatientName = getRegisteredPatientName();
+    
+    // If we found a registered name in localStorage, use it instead of random
+    if (finalPatientName !== "Unknown Patient") {
+        localStorage.setItem('llamacare_current_patient', finalPatientName);
+        updatePatientInfoOnPage(); // Update again with the registered name
+    }
+
+    /* ==========================
+       PATIENT DATA OBJECT
+    ========================== */
+    let patientData = {
+        name: finalPatientName,
+        painLevel: 5,
+        sessionType: "Consultation",
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    };
+
+    // Theme Toggle - REMOVE THIS LINE: document.addEventListener('DOMContentLoaded', function() {
+    // Check if themeToggle exists before adding event listener
+    const themeToggle = document.getElementById('themeToggle');
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        });
+    }
+    
+    // Remove this duplicate function since we already have it above
+    // Function to select a random patient
+    
+    // Remove this duplicate function since we already have it above
+    // Function to update patient info on page load
+    
+    // View toggle functionality - ONLY if elements exist on this page
+    const cardViewBtn = document.getElementById('cardViewBtn');
+    const tableViewBtn = document.getElementById('tableViewBtn');
+    const cardView = document.getElementById('cardView');
+    const tableView = document.getElementById('tableView');
+    
+    if (cardViewBtn && tableViewBtn && cardView && tableView) {
+        cardViewBtn.addEventListener('click', function() {
+            cardView.style.display = 'grid';
+            tableView.style.display = 'none';
+            cardViewBtn.classList.add('active');
+            tableViewBtn.classList.remove('active');
+        });
+        
+        tableViewBtn.addEventListener('click', function() {
+            cardView.style.display = 'none';
+            tableView.style.display = 'table';
+            cardViewBtn.classList.remove('active');
+            tableViewBtn.classList.add('active');
+        });
+    }
+    
+    // Option selection functionality
+    function handleOptionSelect(optionNumber) {
+        const optionTitles = [
+            "Form Explanation", 
+            "Procedure Understanding", 
+            "Anxiety Reduction"
+        ];
+        
+        const optionSummaries = [
+            "Understand before signing",
+            "Surgery procedure explained simply",
+            "Calm down, reduce anxiety"
+        ];
+        
+        // Get current patient info from our database function
+        const currentPatient = getCurrentPatient();
+        
+        // Show selection confirmation
+        alert(`Thank you ${currentPatient}! You've selected: "${optionTitles[optionNumber-1]}"\n\nWe'll now help you with: "${optionSummaries[optionNumber-1]}"`);
+        
+        // In a real app, this would redirect to the appropriate service page
+        console.log(`Patient selected option ${optionNumber}: ${optionTitles[optionNumber-1]}`);
+    }
+    
+    // Add event listeners to all select buttons (card view) - ONLY if they exist
+    document.querySelectorAll('.option-card .select-btn').forEach((btn, index) => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent event bubbling
+            const card = this.closest('.option-card');
+            if (card) {
+                const optionNumber = card.id.replace('option', '');
+                handleOptionSelect(parseInt(optionNumber));
+            }
+        });
+    });
+    
+    // Add event listeners to table row select buttons - ONLY if they exist
+    document.querySelectorAll('.option-row .select-btn').forEach((btn, index) => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation(); // Prevent event bubbling
+            const row = this.closest('.option-row');
+            if (row) {
+                const optionNumber = row.getAttribute('data-option');
+                handleOptionSelect(parseInt(optionNumber));
+            }
+        });
+    });
+    
+    // Add click event to entire cards for selection - ONLY if they exist
+    document.querySelectorAll('.option-card').forEach((card, index) => {
+        card.addEventListener('click', function(e) {
+            // Only trigger if the click wasn't on the button itself
+            if (!e.target.closest('.select-btn')) {
+                const optionNumber = this.id.replace('option', '');
+                handleOptionSelect(parseInt(optionNumber));
+            }
+        });
+    });
+    
+    // Add click event to table rows for selection - ONLY if they exist
+    document.querySelectorAll('.option-row').forEach((row, index) => {
+        row.addEventListener('click', function(e) {
+            // Only trigger if the click wasn't on the button itself
+            if (!e.target.closest('.select-btn')) {
+                const optionNumber = this.getAttribute('data-option');
+                handleOptionSelect(parseInt(optionNumber));
+            }
+        });
+    });
+    
+    // Set initial view (if elements exist on this page)
+    if (cardView && tableView) {
+        cardView.style.display = 'grid';
+        tableView.style.display = 'none';
+    }
+    
+    // Optional: Refresh patient every 30 seconds (for demo purposes)
+    // setInterval(updatePatientInfo, 30000);
+    
+    // END of your existing code
+    // ======================================================
+});       
+ </script>
+    </body>
+</html>

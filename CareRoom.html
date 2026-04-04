@@ -1,0 +1,1756 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LlamaCare - Post-Op Guidance</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Color variables for light mode */
+        :root {
+            --primary-blue: #3498db;
+            --secondary-green: #2ecc71;
+            --dark-text: #2c3e50;
+            --light-text: #7f8c8d;
+            --background: #f0f9ff;
+            --white: #ffffff;
+            --input-border: #ecf0f1;
+            --input-focus: #3498db;
+            --card-bg: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --gradient-bg: linear-gradient(to right, #3498db, #2ecc71);
+            --warning-red: #e74c3c;
+            --recovery-purple: #9b59b6;
+            --timeline-teal: #1abc9c;
+        }
+        
+        /* Dark mode variables */
+        .dark-mode {
+            --primary-blue: #2980b9;
+            --secondary-green: #27ae60;
+            --dark-text: #ecf0f1;
+            --light-text: #bdc3c7;
+            --background: #1a1a2e;
+            --white: #2c3e50;
+            --input-border: #34495e;
+            --input-focus: #3498db;
+            --card-bg: #2c3e50;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --gradient-bg: linear-gradient(to right, #2980b9, #27ae60);
+            --warning-red: #c0392b;
+            --recovery-purple: #8e44ad;
+            --timeline-teal: #16a085;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--dark-text);
+            min-height: 100vh;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(52, 152, 219, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(155, 89, 182, 0.1) 0%, transparent 20%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            background: var(--gradient-bg);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-text);
+            letter-spacing: 1px;
+        }
+        
+        /* Patient info and controls */
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .patient-info {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .patient-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gradient-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .patient-name {
+            font-weight: 600;
+            color: var(--dark-text);
+            font-size: 1.1rem;
+        }
+        
+        .mode-toggle {
+            background: var(--gradient-bg);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .mode-toggle:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        /* Page Title */
+        .page-title {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .page-title h1 {
+            font-size: 2.2rem;
+            color: var(--dark-text);
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title p {
+            font-size: 1.2rem;
+            color: var(--light-text);
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        /* Database Info Section */
+        .database-section {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px var(--shadow-color);
+            margin-bottom: 2.5rem;
+        }
+        
+        .database-section h2 {
+            color: var(--dark-text);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--primary-blue);
+            padding-bottom: 0.5rem;
+        }
+        
+        .patient-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .detail-card {
+            background-color: rgba(52, 152, 219, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            border-left: 4px solid var(--primary-blue);
+        }
+        
+        .detail-card.recovery {
+            border-left-color: var(--recovery-purple);
+            background-color: rgba(155, 89, 182, 0.05);
+        }
+        
+        .detail-card.warning {
+            border-left-color: var(--warning-red);
+            background-color: rgba(231, 76, 60, 0.05);
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: var(--light-text);
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .detail-value {
+            color: var(--dark-text);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        /* Post-Op Timeline */
+        .timeline-section {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px var(--shadow-color);
+            margin-bottom: 2.5rem;
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .section-header h2 {
+            color: var(--dark-text);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .llama-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--gradient-bg);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .timeline-container {
+            position: relative;
+            padding: 2rem 0;
+        }
+        
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 30px;
+            width: 4px;
+            background-color: var(--timeline-teal);
+            border-radius: 2px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 70px;
+            margin-bottom: 2rem;
+        }
+        
+        .timeline-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .timeline-icon {
+            position: absolute;
+            left: 20px;
+            top: 0;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--timeline-teal);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            z-index: 1;
+        }
+        
+        .timeline-content {
+            background-color: rgba(26, 188, 156, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+        }
+        
+        .timeline-time {
+            font-weight: 700;
+            color: var(--timeline-teal);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+        
+        .timeline-title {
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 0.8rem;
+            font-size: 1.3rem;
+        }
+        
+        .timeline-description {
+            color: var(--light-text);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .timeline-instructions {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px dashed var(--input-border);
+        }
+        
+        .instruction-list {
+            list-style-type: none;
+        }
+        
+        .instruction-list li {
+            padding: 0.5rem 0;
+            color: var(--dark-text);
+            display: flex;
+            align-items: flex-start;
+            gap: 0.8rem;
+        }
+        
+        .instruction-list li i {
+            color: var(--timeline-teal);
+            margin-top: 0.2rem;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+            justify-content: center;
+        }
+        
+        .action-btn {
+            background: var(--gradient-bg);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+            min-width: 200px;
+            justify-content: center;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(52, 152, 219, 0.5);
+        }
+        
+        .action-btn.wound-care {
+            background: linear-gradient(to right, var(--recovery-purple), var(--timeline-teal));
+            box-shadow: 0 8px 20px rgba(155, 89, 182, 0.4);
+        }
+        
+        .action-btn.follow-up {
+            background: linear-gradient(to right, var(--warning-red), #e67e22);
+            box-shadow: 0 8px 20px rgba(231, 76, 60, 0.4);
+        }
+        
+        /* Symptom Survey Section */
+        .survey-section {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px var(--shadow-color);
+            margin-bottom: 2.5rem;
+        }
+        
+        .survey-section h2 {
+            color: var(--dark-text);
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .survey-subtitle {
+            color: var(--light-text);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .survey-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .question-group {
+            background-color: rgba(52, 152, 219, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+        }
+        
+        .question-text {
+            font-weight: 600;
+            color: var(--dark-text);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+        
+        .answer-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        
+        .answer-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 1rem;
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .answer-option:hover {
+            border-color: var(--primary-blue);
+        }
+        
+        .answer-option.selected {
+            background-color: rgba(52, 152, 219, 0.1);
+            border-color: var(--primary-blue);
+        }
+        
+        .severity-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+        }
+        
+        .severity-low {
+            background-color: var(--secondary-green);
+        }
+        
+        .severity-medium {
+            background-color: #f39c12;
+        }
+        
+        .severity-high {
+            background-color: var(--warning-red);
+        }
+        
+        /* Popup Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--light-text);
+            transition: color 0.3s ease;
+        }
+        
+        .close-modal:hover {
+            color: var(--dark-text);
+        }
+        
+        .modal-title {
+            color: var(--dark-text);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+        
+        .modal-message {
+            color: var(--light-text);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .modal-btn {
+            background: var(--gradient-bg);
+            color: white;
+            border: none;
+            padding: 0.9rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        
+        .modal-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        /* Wound Care Modal */
+        .wound-care-list {
+            list-style-type: none;
+            margin: 1.5rem 0;
+        }
+        
+        .wound-care-list li {
+            padding: 0.8rem 0;
+            color: var(--dark-text);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            border-bottom: 1px solid var(--input-border);
+        }
+        
+        .wound-care-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .wound-care-list li i {
+            color: var(--recovery-purple);
+            margin-top: 0.2rem;
+        }
+        
+        .disclaimer-box {
+            background-color: rgba(231, 76, 60, 0.05);
+            border-left: 4px solid var(--warning-red);
+            border-radius: 10px;
+            padding: 1.2rem;
+            margin-top: 1.5rem;
+        }
+        
+        .disclaimer-box p {
+            color: var(--light-text);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        /* Follow-up Calendar */
+        .calendar-view {
+            margin: 1.5rem 0;
+            background-color: rgba(52, 152, 219, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .calendar-month {
+            font-weight: 700;
+            color: var(--dark-text);
+            font-size: 1.3rem;
+        }
+        
+        .calendar-nav {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .calendar-nav-btn {
+            background-color: var(--card-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 5px;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: var(--dark-text);
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+        }
+        
+        .calendar-day-header {
+            text-align: center;
+            font-weight: 600;
+            color: var(--light-text);
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .calendar-day {
+            text-align: center;
+            padding: 0.8rem 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .calendar-day:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .calendar-day.active {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+        
+        .calendar-day.appointment {
+            background-color: rgba(155, 89, 182, 0.1);
+            border: 1px solid var(--recovery-purple);
+        }
+        
+        /* Emergency Services */
+        .emergency-services {
+            background-color: rgba(231, 76, 60, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border-left: 4px solid var(--warning-red);
+        }
+        
+        .emergency-services h4 {
+            color: var(--dark-text);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .emergency-services p {
+            color: var(--light-text);
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        
+        .emergency-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .emergency-link {
+            background-color: var(--card-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            padding: 1rem;
+            text-decoration: none;
+            color: var(--dark-text);
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 150px;
+            text-align: center;
+        }
+        
+        .emergency-link:hover {
+            background-color: rgba(231, 76, 60, 0.1);
+            border-color: var(--warning-red);
+            transform: translateY(-3px);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--input-border);
+            color: var(--light-text);
+            font-size: 0.9rem;
+        }
+        
+        .footer-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            background-color: rgba(52, 152, 219, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--dark-text);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+            
+            .header-controls {
+                justify-content: center;
+            }
+            
+            .page-title h1 {
+                font-size: 1.8rem;
+            }
+            
+            .timeline-container::before {
+                left: 20px;
+            }
+            
+            .timeline-item {
+                padding-left: 60px;
+            }
+            
+            .timeline-icon {
+                left: 10px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .action-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .calendar-grid {
+                grid-template-columns: repeat(7, 1fr);
+                font-size: 0.8rem;
+            }
+            
+            .emergency-links {
+                flex-direction: column;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .logo-text {
+                font-size: 1.8rem;
+            }
+            
+            .page-title h1 {
+                font-size: 1.6rem;
+            }
+            
+            .timeline-item {
+                padding-left: 50px;
+            }
+            
+            .timeline-icon {
+                left: 5px;
+                width: 25px;
+                height: 25px;
+                font-size: 0.8rem;
+            }
+            
+            .calendar-day-header,
+            .calendar-day {
+                padding: 0.3rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-container">
+                <i class="fas fa-heartbeat logo-icon"></i>
+                <h1 class="logo-text">LlamaCare</h1>
+            </div>
+            
+            <div class="header-controls">
+                <div class="patient-info">
+                    <div class="patient-avatar" id="patientAvatar">RS</div>
+                    <div class="patient-name" id="patientName">Rearabetswe Sons</div>
+                </div>
+                
+                <button class="mode-toggle" id="modeToggle">
+                    <i class="fas fa-moon"></i> Dark Mode
+                </button>
+            </div>
+        </header>
+        
+        <!-- Page Title -->
+        <div class="page-title">
+            <h1>CareRoom - Post-Op Guidance</h1>
+            <p>Your personalized recovery plan with time-based instructions, wound care reminders, and red-flag detection</p>
+        </div>
+        
+        <!-- Database Section -->
+        <div class="database-section">
+            <h2>Your Post-Operative Information</h2>
+            <div class="patient-details-grid">
+                <div class="detail-card">
+                    <div class="detail-label">Patient ID</div>
+                    <div class="detail-value" id="patientId">LLC-2025-0427</div>
+                    
+                    <div class="detail-label">Procedure</div>
+                    <div class="detail-value" id="procedure">Laparoscopic Cholecystectomy</div>
+                </div>
+                
+                <div class="detail-card recovery">
+                    <div class="detail-label">Surgery Date</div>
+                    <div class="detail-value" id="surgeryDate">May 15, 2025</div>
+                    
+                    <div class="detail-label">Days Since Surgery</div>
+                    <div class="detail-value" id="daysSince">2 days</div>
+                </div>
+                
+                <div class="detail-card warning">
+                    <div class="detail-label">Next Follow-up</div>
+                    <div class="detail-value" id="nextFollowUp">May 22, 2025</div>
+                    
+                    <div class="detail-label">Surgeon</div>
+                    <div class="detail-value" id="surgeon">Dr. Sarah Miller</div>
+                </div>
+            </div>
+            
+            <div class="llama-badge">
+                <i class="fas fa-robot"></i> Powered by LlamaCare AI Model v3.2
+            </div>
+        </div>
+        
+        <!-- Post-Op Timeline -->
+        <div class="timeline-section">
+            <div class="section-header">
+                <h2><i class="fas fa-clock"></i> Post-Op Timeline</h2>
+                <div class="llama-badge">
+                    <i class="fas fa-brain"></i> AI-Generated Instructions
+                </div>
+            </div>
+            
+            <div class="timeline-container">
+                <!-- Timeline Item 1 -->
+                <div class="timeline-item">
+                    <div class="timeline-icon">
+                        <i class="fas fa-hourglass-start"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">First 24 Hours</div>
+                        <div class="timeline-title">Immediate Recovery</div>
+                        <div class="timeline-description">
+                            Focus on rest, pain management, and monitoring for any immediate complications.
+                        </div>
+                        
+                        <div class="timeline-instructions">
+                            <ul class="instruction-list">
+                                <li><i class="fas fa-capsules"></i> Take prescribed pain medication as directed</li>
+                                <li><i class="fas fa-bed"></i> Rest but get up to walk every 2-3 hours</li>
+                                <li><i class="fas fa-thermometer"></i> Monitor temperature every 6 hours</li>
+                                <li><i class="fas fa-tint"></i> Drink plenty of fluids, clear liquids only</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Timeline Item 2 -->
+                <div class="timeline-item">
+                    <div class="timeline-icon">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">Days 2-7</div>
+                        <div class="timeline-title">Initial Healing Phase</div>
+                        <div class="timeline-description">
+                            Wound care begins, gradual increase in activity, and monitoring for infection signs.
+                        </div>
+                        
+                        <div class="timeline-instructions">
+                            <ul class="instruction-list">
+                                <li><i class="fas fa-band-aid"></i> Clean incision sites daily with mild soap and water</li>
+                                <li><i class="fas fa-walking"></i> Increase walking distance gradually each day</li>
+                                <li><i class="fas fa-utensils"></i> Advance diet as tolerated, focus on high-fiber foods</li>
+                                <li><i class="fas fa-ban"></i> Avoid heavy lifting (nothing over 5kg)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Timeline Item 3 -->
+                <div class="timeline-item">
+                    <div class="timeline-icon">
+                        <i class="fas fa-calendar-week"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-time">Weeks 2-4</div>
+                        <div class="timeline-title">Return to Normal Activities</div>
+                        <div class="timeline-description">
+                            Gradual return to work and normal activities while continuing wound care.
+                        </div>
+                        
+                        <div class="timeline-instructions">
+                            <ul class="instruction-list">
+                                <li><i class="fas fa-user-md"></i> Follow-up appointment with surgeon (week 2)</li>
+                                <li><i class="fas fa-briefcase"></i> Return to desk work if comfortable (week 2-3)</li>
+                                <li><i class="fas fa-dumbbell"></i> Light exercise can resume (week 3)</li>
+                                <li><i class="fas fa-shower"></i> Can take normal showers (week 2)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="action-btn wound-care" id="woundCareBtn">
+                <i class="fas fa-band-aid"></i> Wound Care Instructions
+            </button>
+            
+            <button class="action-btn follow-up" id="followUpBtn">
+                <i class="fas fa-calendar-check"></i> Schedule Follow-up
+            </button>
+            
+            <button class="action-btn" id="checkpointBtn">
+                <i class="fas fa-clipboard-check"></i> 48-Hour Checkpoint
+            </button>
+        </div>
+        
+        <!-- Symptom Survey Section -->
+        <div class="survey-section">
+            <h2><i class="fas fa-clipboard-list"></i> Symptom Check Survey</h2>
+            <p class="survey-subtitle">
+                Please complete this quick survey to help us monitor your recovery. 
+                <strong>Severe responses will automatically escalate to your care team.</strong>
+            </p>
+            
+            <div class="survey-form" id="symptomSurvey">
+                <!-- Question 1 -->
+                <div class="question-group">
+                    <div class="question-text">1. How would you rate your pain level today?</div>
+                    <div class="answer-options">
+                        <div class="answer-option" data-question="1" data-severity="low">
+                            <div class="severity-indicator severity-low"></div>
+                            <span>Mild (1-3/10) - Manageable with medication</span>
+                        </div>
+                        <div class="answer-option" data-question="1" data-severity="medium">
+                            <div class="severity-indicator severity-medium"></div>
+                            <span>Moderate (4-6/10) - Pain interferes with activities</span>
+                        </div>
+                        <div class="answer-option" data-question="1" data-severity="high">
+                            <div class="severity-indicator severity-high"></div>
+                            <span>Severe (7-10/10) - Constant, unrelieved by medication</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Question 2 -->
+                <div class="question-group">
+                    <div class="question-text">2. Do you have a fever (temperature above 38°C / 100.4°F)?</div>
+                    <div class="answer-options">
+                        <div class="answer-option" data-question="2" data-severity="low">
+                            <div class="severity-indicator severity-low"></div>
+                            <span>No fever</span>
+                        </div>
+                        <div class="answer-option" data-question="2" data-severity="medium">
+                            <div class="severity-indicator severity-medium"></div>
+                            <span>Slight fever (under 38.5°C / 101.3°F)</span>
+                        </div>
+                        <div class="answer-option" data-question="2" data-severity="high">
+                            <div class="severity-indicator severity-high"></div>
+                            <span>High fever (above 38.5°C / 101.3°F) with chills</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Question 3 -->
+                <div class="question-group">
+                    <div class="question-text">3. How does your wound/surgical site look?</div>
+                    <div class="answer-options">
+                        <div class="answer-option" data-question="3" data-severity="low">
+                            <div class="severity-indicator severity-low"></div>
+                            <span>Clean, dry, minimal redness</span>
+                        </div>
+                        <div class="answer-option" data-question="3" data-severity="medium">
+                            <div class="severity-indicator severity-medium"></div>
+                            <span>Slightly red, warm, or tender</span>
+                        </div>
+                        <div class="answer-option" data-question="3" data-severity="high">
+                            <div class="severity-indicator severity-high"></div>
+                            <span>Increasing redness, swelling, pus, or foul odor</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="action-btn" id="submitSurveyBtn" style="margin-top: 2rem;">
+                <i class="fas fa-paper-plane"></i> Complete Survey
+            </button>
+            
+            <!-- Emergency Services -->
+            <div class="emergency-services">
+                <h4><i class="fas fa-exclamation-triangle"></i> Emergency Information</h4>
+                <p>If you experience any of the following, seek immediate medical attention:</p>
+                <ul style="color: var(--light-text); margin-left: 1.5rem; margin-bottom: 1.5rem;">
+                    <li>Chest pain or difficulty breathing</li>
+                    <li>Excessive bleeding from surgical site</li>
+                    <li>Severe, unrelenting abdominal pain</li>
+                    <li>Confusion or fainting</li>
+                </ul>
+                
+                <div class="emergency-links">
+                    <a href="#" class="emergency-link">
+                        <i class="fas fa-ambulance"></i><br>
+                        Emergency: 112
+                    </a>
+                    <a href="#" class="emergency-link">
+                        <i class="fas fa-hospital"></i><br>
+                        Hospital: 011-488-4911
+                    </a>
+                    <a href="#" class="emergency-link">
+                        <i class="fas fa-user-md"></i><br>
+                        Surgeon's Office
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer>
+            <p>LlamaCare &copy; 2025. "Where understanding meets comfort"</p>
+            <div class="footer-badges">
+                <span class="badge">Post-Op Monitoring</span>
+                <span class="badge">AI-Powered Triage</span>
+                <span class="badge">Red-Flag Detection</span>
+                <span class="badge">24/7 Support Available</span>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Wound Care Modal -->
+    <div class="modal" id="woundCareModal">
+        <div class="modal-content">
+            <div class="close-modal" id="closeWoundCareModal">&times;</div>
+            <h3 class="modal-title"><i class="fas fa-band-aid"></i> Wound Care Instructions</h3>
+            
+            <div class="disclaimer-box">
+                <p><strong>Important:</strong> These are general guidelines for natural wound healing support. This is not clinical advice. Always follow your surgeon's specific instructions and contact them with any concerns.</p>
+            </div>
+            
+            <p class="modal-message">
+                Proper wound care is essential for healing. Here are organic, natural approaches to support your body's healing process:
+            </p>
+            
+            <ul class="wound-care-list">
+                <li><i class="fas fa-leaf"></i> <strong>Keep it clean and dry:</strong> Gently clean around the wound with mild soap and water. Pat dry with a clean towel.</li>
+                <li><i class="fas fa-sun"></i> <strong>Allow air circulation:</strong> When safe to do so, let the wound breathe without dressings for short periods.</li>
+                <li><i class="fas fa-apple-alt"></i> <strong>Nutrition support:</strong> Eat foods rich in vitamin C (citrus fruits, bell peppers), zinc (nuts, seeds), and protein to support tissue repair.</li>
+                <li><i class="fas fa-tint"></i> <strong>Stay hydrated:</strong> Drink plenty of water to help your body flush toxins and deliver nutrients to healing tissues.</li>
+                <li><i class="fas fa-bed"></i> <strong>Rest adequately:</strong> Your body heals during sleep. Aim for 7-9 hours of quality sleep each night.</li>
+                <li><i class="fas fa-ban"></i> <strong>Avoid irritants:</strong> Don't apply creams, oils, or natural remedies unless approved by your healthcare provider.</li>
+                <li><i class="fas fa-hand-paper"></i> <strong>Hand hygiene:</strong> Always wash your hands before touching or cleaning your wound area.</li>
+                <li><i class="fas fa-tshirt"></i> <strong>Wear loose clothing:</strong> Avoid tight clothing that might rub against or irritate the wound area.</li>
+            </ul>
+            
+            <div class="disclaimer-box">
+                <p><strong>Red flags requiring medical attention:</strong> Increased redness, swelling, warmth, pus, foul odor, fever, or increased pain. Contact your healthcare provider immediately if you notice any of these signs.</p>
+            </div>
+            
+            <button class="modal-btn" id="closeWoundCareBtn">Close</button>
+        </div>
+    </div>
+    
+    <!-- Follow-up Schedule Modal -->
+    <div class="modal" id="followUpModal">
+        <div class="modal-content">
+            <div class="close-modal" id="closeFollowUpModal">&times;</div>
+            <h3 class="modal-title"><i class="fas fa-calendar-check"></i> Schedule Follow-up</h3>
+            
+            <p class="modal-message">
+                Your scheduled follow-up appointment details:
+            </p>
+            
+            <div style="background-color: rgba(52, 152, 219, 0.1); border-radius: 15px; padding: 1.5rem; margin: 1.5rem 0;">
+                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                    <i class="fas fa-calendar-day" style="font-size: 2rem; color: var(--primary-blue);"></i>
+                    <div>
+                        <div style="font-weight: 700; color: var(--dark-text); font-size: 1.3rem;">Wednesday, May 22, 2025</div>
+                        <div style="color: var(--light-text);">10:30 AM - 11:15 AM</div>
+                    </div>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <i class="fas fa-map-marker-alt" style="font-size: 1.5rem; color: var(--primary-blue);"></i>
+                    <div>
+                        <div style="font-weight: 600; color: var(--dark-text);">Milpark Hospital - Surgical Follow-up Clinic</div>
+                        <div style="color: var(--light-text); font-size: 0.9rem;">9 Guild Rd, Parktown, Johannesburg, 2193</div>
+                        <div style="color: var(--light-text); font-size: 0.9rem;">Ground Floor, Clinic 3A</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--input-border);">
+                    <div style="display: flex; align-items: center; gap: 0.8rem; color: var(--dark-text);">
+                        <i class="fas fa-user-md"></i>
+                        <span>With: <strong>Dr. Sarah Miller</strong> (General Surgeon)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="calendar-view">
+                <div class="calendar-header">
+                    <div class="calendar-month">May 2025</div>
+                    <div class="calendar-nav">
+                        <button class="calendar-nav-btn"><i class="fas fa-chevron-left"></i></button>
+                        <button class="calendar-nav-btn"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                
+                <div class="calendar-grid">
+                    <div class="calendar-day-header">Sun</div>
+                    <div class="calendar-day-header">Mon</div>
+                    <div class="calendar-day-header">Tue</div>
+                    <div class="calendar-day-header">Wed</div>
+                    <div class="calendar-day-header">Thu</div>
+                    <div class="calendar-day-header">Fri</div>
+                    <div class="calendar-day-header">Sat</div>
+                    
+                    <!-- Calendar days would be populated dynamically in a real app -->
+                    <div class="calendar-day">28</div>
+                    <div class="calendar-day">29</div>
+                    <div class="calendar-day">30</div>
+                    <div class="calendar-day">1</div>
+                    <div class="calendar-day">2</div>
+                    <div class="calendar-day">3</div>
+                    <div class="calendar-day">4</div>
+                    <div class="calendar-day">5</div>
+                    <div class="calendar-day">6</div>
+                    <div class="calendar-day">7</div>
+                    <div class="calendar-day">8</div>
+                    <div class="calendar-day">9</div>
+                    <div class="calendar-day">10</div>
+                    <div class="calendar-day">11</div>
+                    <div class="calendar-day">12</div>
+                    <div class="calendar-day">13</div>
+                    <div class="calendar-day">14</div>
+                    <div class="calendar-day appointment">15</div>
+                    <div class="calendar-day">16</div>
+                    <div class="calendar-day">17</div>
+                    <div class="calendar-day">18</div>
+                    <div class="calendar-day">19</div>
+                    <div class="calendar-day">20</div>
+                    <div class="calendar-day">21</div>
+                    <div class="calendar-day appointment active">22</div>
+                    <div class="calendar-day">23</div>
+                    <div class="calendar-day">24</div>
+                    <div class="calendar-day">25</div>
+                    <div class="calendar-day">26</div>
+                    <div class="calendar-day">27</div>
+                    <div class="calendar-day">28</div>
+                    <div class="calendar-day">29</div>
+                    <div class="calendar-day">30</div>
+                    <div class="calendar-day">31</div>
+                </div>
+                
+                <div style="margin-top: 1rem; display: flex; gap: 1rem; align-items: center;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="width: 15px; height: 15px; background-color: rgba(155, 89, 182, 0.1); border: 1px solid var(--recovery-purple); border-radius: 3px;"></div>
+                        <span style="font-size: 0.9rem; color: var(--light-text);">Appointment Day</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <div style="width: 15px; height: 15px; background-color: var(--primary-blue); border-radius: 3px;"></div>
+                        <span style="font-size: 0.9rem; color: var(--light-text);">Today's Appointment</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="modal-btn" id="closeFollowUpBtn">Close</button>
+        </div>
+    </div>
+    
+    <!-- Survey Submitted Modal -->
+    <div class="modal" id="surveySubmittedModal">
+        <div class="modal-content">
+            <div class="close-modal" id="closeSurveyModal">&times;</div>
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <i class="fas fa-check-circle" style="font-size: 4rem; color: var(--secondary-green);"></i>
+            </div>
+            <h3 class="modal-title">Survey Submitted Successfully!</h3>
+            <p class="modal-message" id="surveyMessage">
+                Thank you for completing the symptom check. Your responses have been submitted to your care team. No immediate concerns were detected based on your answers.
+            </p>
+            <button class="modal-btn" id="closeSurveyBtn" onclick="window.location.href='ToContinueBoard.html'">Close</button>
+        </div>
+    </div>
+    
+    <!-- Red Flag Alert Modal -->
+    <div class="modal" id="redFlagModal">
+        <div class="modal-content">
+            <div class="close-modal" id="closeRedFlagModal">&times;</div>
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 4rem; color: var(--warning-red);"></i>
+            </div>
+            <h3 class="modal-title">Red Flag Detected</h3>
+            <p class="modal-message" id="redFlagMessage">
+                Based on your survey responses, we've detected potential concerns that require attention. Your care team has been notified and will contact you shortly.
+            </p>
+            
+            <div class="emergency-services" style="margin-top: 1.5rem;">
+                <h4><i class="fas fa-ambulance"></i> Immediate Actions</h4>
+                <p>Based on the LlamaCare AI triage system, we recommend:</p>
+                <ul style="color: var(--light-text); margin-left: 1.5rem; margin-bottom: 1rem;">
+                    <li>Contact your surgeon's office immediately</li>
+                    <li>Monitor your symptoms closely</li>
+                    <li>Go to the nearest emergency room if symptoms worsen</li>
+                </ul>
+            </div>
+            
+            <button class="modal-btn" id="closeRedFlagBtn" style="background: linear-gradient(to right, var(--warning-red), #e67e22);" onclick="window.location.href='ToContinueBoard.html'">Close & Acknowledge</button>
+        </div>
+    </div>
+    
+    <!-- Checkpoint Modal -->
+    <div class="modal" id="checkpointModal">
+        <div class="modal-content">
+            <div class="close-modal" id="closeCheckpointModal">&times;</div>
+            <h3 class="modal-title"><i class="fas fa-clipboard-check"></i> 48-Hour Post-Op Checkpoint</h3>
+            
+            <p class="modal-message">
+                This automated check-in helps detect early complications. The LlamaCare AI will analyze your recovery progress.
+            </p>
+            
+            <div style="background-color: rgba(26, 188, 156, 0.1); border-radius: 15px; padding: 1.5rem; margin: 1.5rem 0;">
+                <h4 style="color: var(--dark-text); margin-bottom: 1rem;">Recovery Assessment</h4>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: var(--dark-text);">Pain Management</span>
+                        <span style="color: var(--secondary-green); font-weight: 600;">✓ On Track</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: var(--dark-text);">Wound Healing</span>
+                        <span style="color: var(--secondary-green); font-weight: 600;">✓ On Track</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: var(--dark-text);">Mobility</span>
+                        <span style="color: var(--secondary-green); font-weight: 600;">✓ On Track</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="color: var(--dark-text);">Nutrition & Hydration</span>
+                        <span style="color: #f39c12; font-weight: 600;">⚠ Needs Improvement</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="background-color: rgba(52, 152, 219, 0.1); border-radius: 15px; padding: 1.5rem; margin-bottom: 1.5rem;">
+                <h4 style="color: var(--dark-text); margin-bottom: 1rem;">Llama AI Recommendations</h4>
+                <ul style="color: var(--light-text); margin-left: 1.5rem;">
+                    <li>Increase fluid intake to at least 8 glasses of water daily</li>
+                    <li>Incorporate more protein-rich foods to support healing</li>
+                    <li>Continue with short, frequent walks as tolerated</li>
+                    <li>Take pain medication as prescribed, don't wait for severe pain</li>
+                </ul>
+            </div>
+            
+            <button class="modal-btn" id="closeCheckpointBtn">Close</button>
+        </div>
+    </div>
+    
+    <script>
+        // Array of patient names
+        // ===== DATABASE INITIALIZATION - Add this to ALL pages =====
+// This should be added at the beginning of each page's script section
+
+// Function to get current patient from database
+function getCurrentPatient() {
+    // First try to get from localStorage
+    const savedPatient = localStorage.getItem('llamacare_current_patient');
+    
+    if (savedPatient) {
+        return savedPatient;
+    }
+    
+    // If no saved patient, use the random selection from the array
+    const patientNames = ["Rearabetswe Sons", "Neo Letswalo", "Enoch Emmanuel", "Kamogelo Mvemve", "Tinyiko Selamolela"];
+    const randomIndex = Math.floor(Math.random() * patientNames.length);
+    const randomPatient = patientNames[randomIndex];
+    
+    // Save this random patient for consistency across the session
+    localStorage.setItem('llamacare_current_patient', randomPatient);
+    
+    return randomPatient;
+}
+
+// Function to get patient data from database
+function getPatientData(patientName) {
+    const patientList = JSON.parse(localStorage.getItem('llamacare_patient_list') || '[]');
+    
+    // Find patient by name
+    const patientData = patientList.find(patient => 
+        patient.name.toLowerCase() === patientName.toLowerCase()
+    );
+    
+    if (patientData) {
+        return patientData;
+    }
+    
+    // If not found in registration data, return default data
+    return {
+        name: patientName,
+        id: 'LLC-' + Math.floor(1000 + Math.random() * 9000),
+        registrationDate: new Date().toISOString().split('T')[0]
+    };
+}
+
+// Function to get initials from a full name
+function getInitials(fullName) {
+    if (!fullName) return 'LL';
+    
+    return fullName
+        .split(' ')
+        .map(word => word[0])
+        .join('')
+        .toUpperCase();
+}
+
+// Function to update patient info on page
+function updatePatientInfoOnPage() {
+    const patientName = getCurrentPatient();
+    const patientInitials = getInitials(patientName);
+    const patientData = getPatientData(patientName);
+    
+    // Update patient name on page (if element exists)
+    const patientNameElement = document.getElementById('patientName');
+    if (patientNameElement) {
+        patientNameElement.textContent = patientName;
+    }
+    
+    // Update patient avatar with initials (if element exists)
+    const patientAvatarElement = document.getElementById('patientAvatar');
+    if (patientAvatarElement) {
+        patientAvatarElement.textContent = patientInitials;
+    }
+    
+    // Update patient ID (if element exists)
+    const patientIdElement = document.getElementById('patientId');
+    if (patientIdElement && patientData.id) {
+        patientIdElement.textContent = patientData.id;
+    }
+    
+    // Update database patient name (if element exists)
+    const dbPatientNameElement = document.getElementById('dbPatientName');
+    if (dbPatientNameElement) {
+        dbPatientNameElement.textContent = patientName;
+    }
+    
+    // Update notification patient name (if element exists)
+    const notificationPatientElement = document.getElementById('notificationPatientName');
+    if (notificationPatientElement) {
+        notificationPatientElement.textContent = patientName;
+    }
+    
+    console.log(`Current patient: ${patientName} (${patientInitials})`, patientData);
+    return patientName;
+}
+
+// Call this function when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Update patient info
+    updatePatientInfoOnPage();
+    
+    // Rest of your existing DOMContentLoaded code...
+    // [Keep all your existing code here]
+});
+        
+        // Patient data simulation
+        const patientData = {
+            "Rearabetswe Sons": {
+                id: "LLC-2025-0427",
+                procedure: "Laparoscopic Cholecystectomy",
+                surgeryDate: "May 15, 2025",
+                daysSince: "2 days",
+                nextFollowUp: "May 22, 2025",
+                surgeon: "Dr. Sarah Miller"
+            },
+            "Neo Letswalo": {
+                id: "LLC-2025-0512",
+                procedure: "Arthroscopic Knee Surgery",
+                surgeryDate: "May 20, 2025",
+                daysSince: "1 day",
+                nextFollowUp: "May 27, 2025",
+                surgeon: "Dr. James Khumalo"
+            },
+            "Enoch Emmanuel": {
+                id: "LLC-2025-0489",
+                procedure: "Cataract Surgery",
+                surgeryDate: "May 18, 2025",
+                daysSince: "3 days",
+                nextFollowUp: "May 25, 2025",
+                surgeon: "Dr. Amina Patel"
+            },
+            "Kamogelo Mvemve": {
+                id: "LLC-2025-0533",
+                procedure: "Appendectomy",
+                surgeryDate: "May 16, 2025",
+                daysSince: "4 days",
+                nextFollowUp: "May 23, 2025",
+                surgeon: "Dr. David van Niekerk"
+            },
+            "Tinyiko Selamolela": {
+                id: "LLC-2025-0496",
+                procedure: "Tonsillectomy",
+                surgeryDate: "May 17, 2025",
+                daysSince: "3 days",
+                nextFollowUp: "May 24, 2025",
+                surgeon: "Dr. Nomsa Dlamini"
+            }
+        };
+        
+        // Current state
+        let currentPatient = "";
+        let isDarkMode = false;
+        let surveyAnswers = {};
+        let redFlagDetected = false;
+        
+        // Function to get initials from a full name
+        function getInitials(fullName) {
+            return fullName
+                .split(' ')
+                .map(word => word[0])
+                .join('')
+                .toUpperCase();
+        }
+        
+        // Function to select a random patient
+        function getRandomPatient() {
+            const randomIndex = Math.floor(Math.random() * patientNames.length);
+            return patientNames[randomIndex];
+        }
+        
+        // Function to update patient info
+        function updatePatientInfo() {
+            currentPatient = getRandomPatient();
+            const patientInitials = getInitials(currentPatient);
+            const patientInfo = patientData[currentPatient] || patientData["Rearabetswe Sons"];
+            
+            // Update the patient name
+            document.getElementById('patientName').textContent = currentPatient;
+            
+            // Update the patient avatar with initials
+            document.getElementById('patientAvatar').textContent = patientInitials;
+            
+            // Update patient data in the database section
+            document.getElementById('patientId').textContent = patientInfo.id;
+            document.getElementById('procedure').textContent = patientInfo.procedure;
+            document.getElementById('surgeryDate').textContent = patientInfo.surgeryDate;
+            document.getElementById('daysSince').textContent = patientInfo.daysSince;
+            document.getElementById('nextFollowUp').textContent = patientInfo.nextFollowUp;
+            document.getElementById('surgeon').textContent = patientInfo.surgeon;
+            
+            console.log(`Current patient: ${currentPatient} (${patientInitials})`);
+        }
+        
+        // Function to toggle dark mode
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark-mode', isDarkMode);
+            
+            const modeToggle = document.getElementById('modeToggle');
+            if (isDarkMode) {
+                modeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            } else {
+                modeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+            }
+            
+            // Save preference to localStorage
+            localStorage.setItem('darkMode', isDarkMode);
+        }
+        
+        // Function to evaluate survey answers
+        function evaluateSurvey() {
+            let redFlags = 0;
+            let totalSeverity = 0;
+            
+            // Count high severity responses
+            for (const question in surveyAnswers) {
+                if (surveyAnswers[question] === 'high') {
+                    redFlags++;
+                }
+                
+                // Calculate severity score
+                if (surveyAnswers[question] === 'low') totalSeverity += 1;
+                if (surveyAnswers[question] === 'medium') totalSeverity += 2;
+                if (surveyAnswers[question] === 'high') totalSeverity += 3;
+            }
+            
+            // Determine if red flags are present
+            redFlagDetected = redFlags > 0 || totalSeverity >= 6;
+            
+            return { redFlags, totalSeverity };
+        }
+        
+        // Function to show survey submission result
+        function showSurveyResult() {
+            const evaluation = evaluateSurvey();
+            
+            if (redFlagDetected) {
+                // Show red flag modal
+                const redFlagMessage = document.getElementById('redFlagMessage');
+                
+                if (evaluation.redFlags > 0) {
+                    redFlagMessage.innerHTML = `
+                        Based on your survey responses, we've detected <strong>${evaluation.redFlags} red flag(s)</strong> that require attention. 
+                        Your care team has been notified via the LlamaCare AI triage system and will contact you within the hour.
+                    `;
+                } else {
+                    redFlagMessage.innerHTML = `
+                        Based on your survey responses, we've detected concerning patterns that require attention. 
+                        Your care team has been notified via the LlamaCare AI triage system and will contact you shortly.
+                    `;
+                }
+                
+                document.getElementById('redFlagModal').style.display = 'flex';
+            } else {
+                // Show normal submission modal
+                const surveyMessage = document.getElementById('surveyMessage');
+                surveyMessage.innerHTML = `
+                    Thank you for completing the symptom check. Your responses have been submitted to your care team. 
+                    No immediate concerns were detected based on your answers. Continue to monitor your recovery as outlined in your post-op timeline.
+                `;
+                
+                document.getElementById('surveySubmittedModal').style.display = 'flex';
+            }
+            
+            // Log survey results
+            console.log(`Survey submitted for ${currentPatient}:`, {
+                answers: surveyAnswers,
+                redFlags: evaluation.redFlags,
+                severityScore: evaluation.totalSeverity,
+                redFlagDetected: redFlagDetected
+            });
+            
+            // In a real app, this would send data to the server/database
+            // Simulate database update
+            localStorage.setItem('lastSurvey', JSON.stringify({
+                patient: currentPatient,
+                answers: surveyAnswers,
+                timestamp: new Date().toISOString(),
+                redFlagDetected: redFlagDetected
+            }));
+        }
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set random patient
+            updatePatientInfo();
+            
+            // Check for saved dark mode preference
+            const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+            if (savedDarkMode) {
+                isDarkMode = true;
+                document.body.classList.add('dark-mode');
+                document.getElementById('modeToggle').innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            }
+            
+            // Set up event listeners
+            
+            // Dark mode toggle
+            document.getElementById('modeToggle').addEventListener('click', toggleDarkMode);
+            
+            // Wound care button
+            document.getElementById('woundCareBtn').addEventListener('click', function() {
+                document.getElementById('woundCareModal').style.display = 'flex';
+            });
+            
+            // Follow-up button
+            document.getElementById('followUpBtn').addEventListener('click', function() {
+                document.getElementById('followUpModal').style.display = 'flex';
+            });
+            
+            // Checkpoint button
+            document.getElementById('checkpointBtn').addEventListener('click', function() {
+                document.getElementById('checkpointModal').style.display = 'flex';
+            });
+            
+            // Submit survey button
+            document.getElementById('submitSurveyBtn').addEventListener('click', function() {
+                // Check if all questions are answered
+                const answeredQuestions = Object.keys(surveyAnswers).length;
+                if (answeredQuestions < 3) {
+                    alert('Please answer all questions before submitting the survey.');
+                    return;
+                }
+                
+                showSurveyResult();
+            });
+            
+            // Survey answer selection
+            document.querySelectorAll('.answer-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const question = this.getAttribute('data-question');
+                    const severity = this.getAttribute('data-severity');
+                    
+                    // Remove selected class from all options in this question
+                    const questionGroup = this.closest('.question-group');
+                    questionGroup.querySelectorAll('.answer-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Add selected class to clicked option
+                    this.classList.add('selected');
+                    
+                    // Store answer
+                    surveyAnswers[question] = severity;
+                    
+                    console.log(`Question ${question} answered: ${severity}`);
+                });
+            });
+            
+            // Close modal buttons
+            document.getElementById('closeWoundCareModal').addEventListener('click', function() {
+                document.getElementById('woundCareModal').style.display = 'none';
+            });
+            
+            document.getElementById('closeWoundCareBtn').addEventListener('click', function() {
+                document.getElementById('woundCareModal').style.display = 'none';
+            });
+            
+            document.getElementById('closeFollowUpModal').addEventListener('click', function() {
+                document.getElementById('followUpModal').style.display = 'none';
+            });
+            
+            document.getElementById('closeFollowUpBtn').addEventListener('click', function() {
+                document.getElementById('followUpModal').style.display = 'none';
+            });
+            
+            document.getElementById('closeCheckpointModal').addEventListener('click', function() {
+                document.getElementById('checkpointModal').style.display = 'none';
+            });
+            
+            document.getElementById('closeCheckpointBtn').addEventListener('click', function() {
+                document.getElementById('checkpointModal').style.display = 'none';
+            });
+            
+            document.getElementById('closeSurveyModal').addEventListener('click', function() {
+                document.getElementById('surveySubmittedModal').style.display = 'none';
+            });
+            
+            document.getElementById('closeSurveyBtn').addEventListener('click', function() {
+                document.getElementById('surveySubmittedModal').style.display = 'none';
+            });
+            
+            document.getElementById('closeRedFlagModal').addEventListener('click', function() {
+                document.getElementById('redFlagModal').style.display = 'none';
+            });
+            
+            document.getElementById('closeRedFlagBtn').addEventListener('click', function() {
+                document.getElementById('redFlagModal').style.display = 'none';
+            });
+            
+            // Close modals when clicking outside
+            window.addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal')) {
+                    e.target.style.display = 'none';
+                }
+            });
+            
+            // Calendar navigation (simplified for demo)
+            document.querySelectorAll('.calendar-nav-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    alert('In a real application, this would navigate to the previous/next month.');
+                });
+            });
+            
+            // Calendar day selection
+            document.querySelectorAll('.calendar-day').forEach(day => {
+                day.addEventListener('click', function() {
+                    if (!this.classList.contains('appointment')) {
+                        alert('This date is available for scheduling. In a real application, you could book an appointment here.');
+                    }
+                });
+            });
+            
+            // Emergency link clicks
+            document.querySelectorAll('.emergency-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const linkText = this.textContent.trim();
+                    
+                    if (linkText.includes('112')) {
+                        alert('In a real application, this would initiate an emergency call to 112.');
+                    } else if (linkText.includes('Hospital')) {
+                        alert('In a real application, this would dial the hospital emergency number.');
+                    } else {
+                        alert('In a real application, this would contact your surgeon\'s office.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

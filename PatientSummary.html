@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LlamaCare - WaitMate Summary</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root {
+    --primary-blue:#3498db;
+    --secondary-green:#2ecc71;
+    --dark-text:#2c3e50;
+    --light-text:#7f8c8d;
+    --background:#f0f9ff;
+    --white:#ffffff;
+}
+
+* {
+    box-sizing:border-box;
+    font-family:Segoe UI,Tahoma,Verdana,sans-serif;
+    margin:0;
+    padding:0;
+}
+
+body {
+    background:var(--background);
+    padding:20px;
+}
+
+.header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.logo {
+    font-size:24px;
+    font-weight:700;
+    color:var(--primary-blue);
+}
+
+.user-info {
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.user-avatar {
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    background:linear-gradient(to right,var(--primary-blue),var(--secondary-green));
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:600;
+}
+
+.container {
+    max-width:1000px;
+    margin:auto;
+}
+
+h1 {
+    text-align:center;
+    margin-bottom:10px;
+}
+
+.patient-banner {
+    background:linear-gradient(to right,var(--primary-blue),var(--secondary-green));
+    color:white;
+    padding:20px;
+    border-radius:12px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.summary-container {
+    background:white;
+    border-radius:15px;
+    padding:25px;
+}
+
+.summary-header {
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:15px;
+}
+
+textarea {
+    width:100%;
+    min-height:140px;
+    margin-top:10px;
+    padding:12px;
+    border-radius:8px;
+}
+
+.button-container {
+    margin-top:25px;
+    display:flex;
+    justify-content:center;
+    gap:15px;
+}
+
+.btn {
+    padding:14px 30px;
+    border:none;
+    border-radius:25px;
+    font-size:16px;
+    cursor:pointer;
+}
+
+.btn-primary {
+    background:linear-gradient(to right,var(--primary-blue),var(--secondary-green));
+    color:white;
+}
+
+.btn-secondary {
+    background:white;
+    border:2px solid var(--primary-blue);
+    color:var(--primary-blue);
+}
+
+.modal {
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.5);
+    justify-content:center;
+    align-items:center;
+}
+
+.modal-content {
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    text-align:center;
+    width:90%;
+    max-width:420px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+    <div class="logo"><i class="fas fa-heartbeat"></i> LlamaCare</div>
+    <div class="user-info">
+        <div class="user-avatar" id="userAvatar">JS</div>
+        <div>
+            <div id="userName">John Smith</div>
+            <small>Patient</small>
+        </div>
+    </div>
+</div>
+
+<h1 id="patientName">WaitMate Summary</h1>
+
+<div class="patient-banner">
+    <div>
+        <h2 id="dynamicPatientName">John Smith</h2>
+        <p>Patient record ready for review</p>
+    </div>
+    <i class="fas fa-user-md fa-2x"></i>
+</div>
+
+<div class="summary-container">
+    <div class="summary-header">
+        <h3>AI Medical Summary</h3>
+        <span id="summaryStatus">Ready</span>
+    </div>
+
+    <p id="aiSummary">
+        Primary Concern:
+Patient reports persistent lower back pain for approximately 3 weeks, rated 6/10 in severity. Pain is exacerbated by prolonged sitting and lifting objects.
+
+Medical History:
+History of mild hypertension managed with medication. No previous back surgeries. Occasional tension headaches. Family history of arthritis (mother).
+
+Current Symptoms:
+Dull, aching pain localized to lumbar region with occasional radiation to left hip. Morning stiffness lasting approximately 30 minutes. No numbness or tingling in extremities. No bowel or bladder dysfunction reported.
+
+Lifestyle Factors:
+Sedentary office job requiring 8+ hours of sitting daily. Limited regular exercise. Patient reports increased stress levels due to work deadlines.
+
+Medications:
+Lisinopril 10mg daily for hypertension. Occasional ibuprofen for pain relief (approximately 3 times per week).
+
+Patient Goals:
+Seeks pain relief to resume daily activities comfortably. Interested in non-pharmacological treatment options. Wants to understand underlying cause of pain.
+    </p>
+
+    <label for="summaryEdit"><strong>Edit summary if needed:</strong></label>
+    <textarea id="summaryEdit" name="summaryEdit">
+Primary Concern:
+Patient reports persistent lower back pain lasting approximately three weeks, rated 6/10 in severity. Pain is aggravated by prolonged sitting, lifting objects, and bending. Patient reports occasional stiffness in the morning lasting about 30 minutes.
+
+Medical History:
+History of mild hypertension controlled with Lisinopril 10mg daily. No previous back surgeries. Occasional tension headaches. Family history of arthritis (mother).
+
+Current Symptoms:
+Dull, aching pain localized to the lumbar region with occasional radiation to the left hip. No numbness or tingling in extremities. No bowel or bladder dysfunction. Reports discomfort when standing for long periods.
+
+Lifestyle Factors:
+Sedentary office job requiring 8+ hours of sitting daily. Limited regular exercise. Reports increased stress due to work deadlines. Occasional sleep disturbances related to discomfort.
+
+Medications:
+Lisinopril 10mg daily. Occasional use of ibuprofen (about 3 times per week) for pain relief.
+
+Patient Goals:
+Seeks pain relief to resume normal daily activities comfortably. Interested in non-pharmacological treatment options such as physical therapy or exercise. Wants to understand the underlying cause of the back pain and ways to prevent recurrence.
+    </textarea>
+</div>
+
+<div class="button-container">
+    <button type="button" class="btn btn-primary" id="submitSummary">
+        <i class="fas fa-paper-plane"></i> Submit to Doctor
+    </button>
+
+    <button type="button" class="btn btn-secondary" id="goToDashboard" style="display:none;">
+        <i class="fas fa-tachometer-alt"></i> Go to Dashboard
+    </button>
+</div>
+
+<div class="modal" id="successModal">
+    <div class="modal-content">
+        <i class="fas fa-check-circle fa-3x" style="color:#2ecc71"></i>
+        <h3>Submitted Successfully</h3>
+        <p id="modalMessage"></p>
+        <button type="button" class="btn btn-primary" id="closeModal">
+            Continue
+        </button>
+    </div>
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // === LOAD WAITMATE ANSWERS INTO PATIENT SUMMARY ===
+
+// Get patient name using the same logic as WaitMate
+function getCurrentPatientNameSummary() {
+    const keys = ["currentUser", "loggedInUser", "user"];
+    for (const k of keys) {
+        try {
+            const raw = localStorage.getItem(k);
+            if (!raw) continue;
+            const parsed = JSON.parse(raw);
+            if (parsed?.name) return parsed.name;
+        } catch (e) {}
+    }
+    return localStorage.getItem("patientName") || "Unknown Patient";
+}
+
+function getAnswersKeySummary() {
+    return `answers_${getCurrentPatientNameSummary()}`;
+}
+
+function loadWaitMateAnswersForSummary() {
+    const raw = localStorage.getItem(getAnswersKeySummary());
+    if (!raw) return null;
+    return JSON.parse(raw);
+}
+
+const wmAnswers = loadWaitMateAnswersForSummary();
+
+// Only run if answers exist
+if (wmAnswers) {
+    const summaryTextBlock = document.getElementById("aiSummary");
+
+    if (summaryTextBlock) {
+        summaryTextBlock.innerHTML = `
+<strong>Primary Concern:</strong><br>
+${wmAnswers.q1 || "Not provided"}<br><br>
+
+<strong>Pain Duration:</strong><br>
+${wmAnswers.q2 || "Not provided"}<br><br>
+
+<strong>Worsening Pattern:</strong><br>
+${wmAnswers.q3 || "Not provided"}<br><br>
+
+<strong>Pain Severity:</strong><br>
+${wmAnswers.q4 || "Not provided"} / 10<br><br>
+
+<strong>Medication Taken:</strong><br>
+${wmAnswers.q5 || "Not provided"}<br><br>
+
+<strong>Allergies:</strong><br>
+${(wmAnswers.q6 && wmAnswers.q6.length) ? wmAnswers.q6.join(", ") : "No allergies"}<br><br>
+
+<strong>Chronic Conditions:</strong><br>
+${wmAnswers.q7 || "None"}<br><br>
+        `;
+    }
+}
+
+
+    const user =
+        JSON.parse(localStorage.getItem("currentUser")) ||
+        JSON.parse(localStorage.getItem("loggedInUser")) ||
+        JSON.parse(localStorage.getItem("user"));
+
+    const patientName = user?.name || "Unknown Patient";
+
+    document.getElementById("userName").textContent = patientName;
+    document.getElementById("dynamicPatientName").textContent = patientName;
+    document.getElementById("patientName").textContent = patientName + "'s WaitMate Summary";
+
+    document.getElementById("userAvatar").textContent =
+        patientName.split(" ").map(n => n[0]).join("").toUpperCase();
+
+    document.getElementById("modalMessage").textContent =
+        "Dr. Sarah Miller will review " + patientName + "'s summary and contact you if needed.";
+
+    document.getElementById("submitSummary").addEventListener("click", function () {
+        document.getElementById("successModal").style.display = "flex";
+        this.style.display = "none";
+        document.getElementById("goToDashboard").style.display = "inline-block";
+    });
+
+    document.getElementById("closeModal").addEventListener("click", function () {
+        window.location.href = "DashBoard2.html";
+    });
+
+    document.getElementById("goToDashboard").addEventListener("click", function () {
+        window.location.href = "DashBoard2.html";
+    });
+
+});
+</script>
+
+</body>
+</html>

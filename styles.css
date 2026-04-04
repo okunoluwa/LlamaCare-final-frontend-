@@ -1,0 +1,180 @@
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Body */
+body {
+    background: #f1f5f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Container */
+.container {
+    width: 570px;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333333;
+}
+
+/* Inputs */
+input, select {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: 1px solid #d6d6d6;
+    border-radius: 8px;
+    font-size: 15px;
+    transition: 0.2s ease;
+}
+
+input:focus,
+select:focus {
+    border-color: #0a84ff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(10,132,255,0.3);
+}
+
+/* Upload Label */
+.upload-label {
+    margin-top: 15px;
+    display: block;
+    font-size: 14px;
+    color: #555555;
+}
+
+/* Button */
+button {
+    width: 100%;
+    background: #0a84ff;
+    border: none;
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 15px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #006dda;
+}
+
+/* Links */
+p {
+    text-align: center;
+    margin-top: 15px;
+}
+
+a {
+    color: #0a84ff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Mobile Responsive */
+@media (max-width: 400px) {
+    .container {
+        width: 90%;
+        padding: 20px;
+    }
+}
+
+/* Theme Toggle Button */
+.theme-btn {
+    position: absolute;
+    top: 20px;
+    width: 40px;
+    height: 40px;
+    right: 20px;
+    padding: 8px 15px;
+    font-size: 14px;
+    background: #0a84ff;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.theme-btn:hover {
+    background: #006dda;
+}
+
+/* DARK MODE */
+body.dark {
+    background: #1a1a1a;
+    color: #e6e6e6;
+}
+
+body.dark .container {
+    background: #2b2b2b;
+    box-shadow: 0 4px 15px rgba(255,255,255,0.08);
+}
+
+body.dark input,
+body.dark select {
+    background: #3a3a3a;
+    border: 1px solid #555;
+    color: #eee;
+}
+
+body.dark input::placeholder,
+body.dark select {
+    color: #cfcfcf;
+}
+
+body.dark button {
+    background: #0070d4;
+}
+
+body.dark a {
+    color: #4ea7ff;
+}
+
+/* Small Voice Assistance Button – TOP RIGHT */
+.voice-btn {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    background: #0a84ff;
+    color: white;
+    font-size: 20px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    transition: 0.3s;
+}
+
+.voice-btn:hover {
+    background: #006dda;
+    transform: scale(1.1);
+}
+
+body.dark .voice-btn {
+    background: #0070d4;
+}

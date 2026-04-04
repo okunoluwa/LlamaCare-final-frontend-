@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Wait Mate - LlamaCare Pre-Consultation</title>
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+        /* Color variables for light mode */
+        :root {
+            --primary-blue: #3498db;
+            --secondary-green: #2ecc71;
+            --dark-text: #2c3e50;
+            --light-text: #7f8c8d;
+            --background: #f0f9ff;
+            --white: #ffffff;
+            --card-bg: #ffffff;
+            --input-border: #ecf0f1;
+            --input-bg: #f8fafc;
+            --shadow: rgba(0, 0, 0, 0.08);
+            --shadow-blue: rgba(52, 152, 219, 0.4);
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+        }
+        
+        /* Dark mode variables */
+        .dark-mode {
+            --primary-blue: #5dade2;
+            --secondary-green: #58d68d;
+            --dark-text: #ecf0f1;
+            --light-text: #bdc3c7;
+            --background: #1a252f;
+            --white: #2c3e50;
+            --card-bg: #34495e;
+            --input-border: #4a6278;
+            --input-bg: #2c3e50;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --shadow-blue: rgba(91, 173, 226, 0.4);
+            --success: #58d68d;
+            --warning: #f8c471;
+            --danger: #f1948a;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--dark-text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(52, 152, 219, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(46, 204, 113, 0.1) 0%, transparent 20%);
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 90vh;
+        }
+        
+        /* Header Section */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            width: 100%;
+            position: relative;
+            padding-top: 60px;
+        }
+
+         .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            display: flex;
+            align-items: left;
+            gap: 10px;
+        }
+        
+        .logo i {
+            color: var(--secondary-green);
+        }
+        
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: linear-gradient(to right, var(--primary-blue), var(--secondary-green));
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 5px 15px var(--shadow-blue);
+            transition: transform 0.3s;
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        .welcome-text {
+            font-size: 1.8rem;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        
+        .app-name {
+            font-size: 3rem;
+            color: var(--dark-text);
+            margin-bottom: 1rem;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .app-name::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 5px;
+            background: linear-gradient(to right, var(--primary-blue), var(--secondary-green));
+            border-radius: 5px;
+        }
+        
+        .patient-name {
+            font-size: 1.8rem;
+            color: var(--secondary-green);
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+        
+        /* Modal for appointment/consultation choice */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        
+        .modal h2 {
+            color: var(--dark-text);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--primary-blue);
+            padding-bottom: 0.5rem;
+        }
+        
+        .modal p {
+            color: var(--light-text);
+            margin-bottom: 2rem;
+            font-size: 1.2rem;
+            line-height: 1.5;
+        }
+        
+        .choice-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 1.5rem;
+        }
+        
+        .choice-btn {
+            background: linear-gradient(to right, var(--primary-blue), var(--secondary-green));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px var(--shadow-blue);
+            letter-spacing: 0.5px;
+            min-width: 180px;
+        }
+        
+        .choice-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px var(--shadow-blue);
+        }
+        
+        /* Q&A Form Section */
+        .qa-container {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem;
+            width: 100%;
+            box-shadow: 0 10px 25px var(--shadow);
+            margin-top: 2rem;
+            display: none; /* Initially hidden */
+        }
+        
+        .qa-container.active {
+            display: block;
+        }
+        
+        .qa-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--primary-blue);
+            padding-bottom: 1rem;
+        }
+        
+        .qa-header h2 {
+            color: var(--dark-text);
+            font-size: 1.8rem;
+        }
+        
+        .session-type {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .question-container {
+            margin-bottom: 2rem;
+            display: none;
+        }
+        
+        .question-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .question-number {
+            color: var(--primary-blue);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .question-text {
+            color: var(--dark-text);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        
+        .answer-input {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            font-size: 1rem;
+            color: var(--dark-text);
+            background-color: var(--input-bg);
+            margin-bottom: 0.5rem;
+        }
+        
+        textarea.answer-input {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+        
+        .rating-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+        
+        .rating-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--primary-blue);
+            background-color: var(--card-bg);
+            color: var(--primary-blue);
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        
+        .rating-btn:hover {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+        
+        .rating-btn.selected {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+        
+        .option-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+        
+        .option-btn {
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            border: 2px solid var(--primary-blue);
+            background-color: var(--card-bg);
+            color: var(--primary-blue);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option-btn:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .option-btn.selected {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+        }
+        
+        .checkbox-container input {
+            margin-right: 10px;
+            transform: scale(1.3);
+        }
+        
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--input-border);
+        }
+        
+        .nav-btn {
+            background: linear-gradient(to right, var(--primary-blue), var(--secondary-green));
+            color: white;
+            border: none;
+            padding: 0.9rem 2rem;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px var(--shadow-blue);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px var(--shadow-blue);
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background-color: var(--input-bg);
+            border-radius: 10px;
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: linear-gradient(to right, var(--primary-blue), var(--secondary-green));
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-text {
+            text-align: center;
+            color: var(--light-text);
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Summary Section */
+        .summary-container {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 2.5rem;
+            width: 100%;
+            box-shadow: 0 10px 25px var(--shadow);
+            margin-top: 2rem;
+            display: none;
+        }
+        
+        .summary-container.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .summary-header {
+            color: var(--dark-text);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            border-bottom: 2px solid var(--primary-blue);
+            padding-bottom: 0.5rem;
+        }
+        
+        .summary-item {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--input-border);
+        }
+        
+        .summary-question {
+            color: var(--light-text);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .summary-answer {
+            color: var(--dark-text);
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(to right, var(--secondary-green), var(--primary-blue));
+            color: white;
+            border: none;
+            padding: 1.2rem 3rem;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px var(--shadow-blue);
+            letter-spacing: 0.5px;
+            margin-top: 2rem;
+            width: 100%;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px var(--shadow-blue);
+        }
+        
+        /* Footer */
+        .footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: var(--light-text);
+            font-size: 0.9rem;
+            width: 100%;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--input-border);
+        }
+        
+        .llamacare-badge {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--card-bg);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            color: var(--primary-blue);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            box-shadow: 0 3px 10px var(--shadow);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .app-name {
+                font-size: 2.5rem;
+            }
+            
+            .welcome-text {
+                font-size: 1.5rem;
+            }
+            
+            .patient-name {
+                font-size: 1.5rem;
+            }
+            
+            .modal, .qa-container, .summary-container {
+                padding: 1.8rem;
+            }
+            
+            .choice-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .choice-btn {
+                width: 100%;
+                max-width: 250px;
+            }
+            
+            .nav-btn {
+                padding: 0.8rem 1.5rem;
+                font-size: 1rem;
+            }
+            
+            .rating-container {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            
+            .rating-btn {
+                width: 35px;
+                height: 35px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .app-name {
+                font-size: 2rem;
+            }
+            
+            .question-text {
+                font-size: 1.1rem;
+            }
+            
+            .modal, .qa-container, .summary-container {
+                padding: 1.5rem;
+            }
+            
+            .theme-toggle {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+    </head>
+    <body>
+        <div class="container">
+            <!-- Header Section -->
+            <div class="header">
+                <div class="logo">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>LlamaCare</span>
+                </div>
+                <button id="themeToggle" class="theme-toggle">🌙</button>
+                <div class="welcome-text">Welcome to the Wait Mate</div>
+                <h1 class="app-name">Pre-consultation Session</h1>
+                <div class="patient-name" id="patientName">Patient Name</div>
+            </div>
+
+            <!-- Modal for appointment/consultation choice -->
+            <div class="modal-overlay" id="choiceModal">
+                <div class="modal">
+                    <h2>Purpose of Visit</h2>
+                    <p>Is <span id="modalPatientName">Patient Name</span> here
+                        for an appointment or consultation?</p>
+                    <div class="choice-buttons">
+                        <button class="choice-btn" id="appointmentBtn">
+                            <i class="fas fa-calendar-check"></i> Appointment
+                        </button>
+                        <button class="choice-btn" id="consultationBtn">
+                            <i class="fas fa-stethoscope"></i> Consultation
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Q&A Form Section -->
+            <div class="qa-container" id="qaForm">
+                <div class="qa-header">
+                    <h2>Pre-Consultation Questions</h2>
+                    <div class="session-type" id="sessionType">Appointment</div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="progress-text">Question <span
+                        id="currentQuestion">1</span> of 7</div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+
+                <!-- Question 1 -->
+                <div class="question-container active" id="q1">
+                    <div class="question-number">Question 1</div>
+                    <div class="question-text">What is the issue that brought
+                        you to the hospital?</div>
+                    <textarea class="answer-input" id="a1"
+                        placeholder="Describe your symptoms or concerns..."></textarea>
+                </div>
+
+                <!-- Question 2 -->
+                <div class="question-container" id="q2">
+                    <div class="question-number">Question 2</div>
+                    <div class="question-text">How long has this pain or issue
+                        been happening?</div>
+                    <div class="option-container">
+                        <button class="option-btn"
+                            data-value="Less than 24 hours">Less than 24
+                            hours</button>
+                        <button class="option-btn" data-value="1-3 days">1-3
+                            days</button>
+                        <button class="option-btn" data-value="4-7 days">4-7
+                            days</button>
+                        <button class="option-btn" data-value="1-2 weeks">1-2
+                            weeks</button>
+                        <button class="option-btn"
+                            data-value="More than 2 weeks">More than 2
+                            weeks</button>
+                        <button class="option-btn"
+                            data-value="More than a month">More than a
+                            month</button>
+                    </div>
+                    <input type="text" class="answer-input" id="a2-custom"
+                        placeholder="Or specify your own timeframe...">
+                </div>
+
+                <!-- Question 3 -->
+                <div class="question-container" id="q3">
+                    <div class="question-number">Question 3</div>
+                    <div class="question-text">Is it getting worse on a daily
+                        basis?</div>
+                    <div class="option-container">
+                        <button class="option-btn"
+                            data-value="Yes, significantly worse">Yes,
+                            significantly worse</button>
+                        <button class="option-btn"
+                            data-value="Yes, slightly worse">Yes, slightly
+                            worse</button>
+                        <button class="option-btn"
+                            data-value="No, about the same">No, about the
+                            same</button>
+                        <button class="option-btn"
+                            data-value="It comes and goes">It comes and
+                            goes</button>
+                        <button class="option-btn"
+                            data-value="It's getting better">It's getting
+                            better</button>
+                    </div>
+                </div>
+
+                <!-- Question 4 -->
+                <div class="question-container" id="q4">
+                    <div class="question-number">Question 4</div>
+                    <div class="question-text">Please rate the severity of your
+                        pain (1 = mild, 10 = severe)</div>
+                    <div class="rating-container">
+                        <button class="rating-btn" data-value="1">1</button>
+                        <button class="rating-btn" data-value="2">2</button>
+                        <button class="rating-btn" data-value="3">3</button>
+                        <button class="rating-btn" data-value="4">4</button>
+                        <button class="rating-btn" data-value="5">5</button>
+                        <button class="rating-btn" data-value="6">6</button>
+                        <button class="rating-btn" data-value="7">7</button>
+                        <button class="rating-btn" data-value="8">8</button>
+                        <button class="rating-btn" data-value="9">9</button>
+                        <button class="rating-btn" data-value="10">10</button>
+                    </div>
+                </div>
+
+                <!-- Question 5 -->
+                <div class="question-container" id="q5">
+                    <div class="question-number">Question 5</div>
+                    <div class="question-text">Have you taken any medication for
+                        this issue?</div>
+                    <div class="option-container">
+                        <button class="option-btn"
+                            data-value="Yes, over-the-counter medication">Yes,
+                            over-the-counter</button>
+                        <button class="option-btn"
+                            data-value="Yes, prescription medication">Yes,
+                            prescription</button>
+                        <button class="option-btn"
+                            data-value="Yes, herbal/natural remedies">Yes,
+                            herbal/natural</button>
+                        <button class="option-btn"
+                            data-value="No medication taken">No medication
+                            taken</button>
+                    </div>
+                    <input type="text" class="answer-input" id="a5-custom"
+                        placeholder="Specify medication names if known...">
+                </div>
+
+                <!-- Question 6 -->
+                <div class="question-container" id="q6">
+                    <div class="question-number">Question 6</div>
+                    <div class="question-text">Do you have any allergies?
+                        (Select all that apply)</div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="allergy-none" name="allergy"
+                            value="None">
+                        <label for="allergy-none">No known allergies</label>
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="allergy-medication"
+                            name="allergy" value="Medication allergies">
+                        <label for="allergy-medication">Medication
+                            allergies</label>
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="allergy-food" name="allergy"
+                            value="Food allergies">
+                        <label for="allergy-food">Food allergies</label>
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="allergy-environmental"
+                            name="allergy" value="Environmental allergies">
+                        <label for="allergy-environmental">Environmental
+                            allergies (pollen, dust, etc.)</label>
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="allergy-latex" name="allergy"
+                            value="Latex allergy">
+                        <label for="allergy-latex">Latex allergy</label>
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" id="allergy-other" name="allergy"
+                            value="Other">
+                        <label for="allergy-other">Other allergies</label>
+                    </div>
+                    <input type="text" class="answer-input" id="a6-custom"
+                        placeholder="Specify other allergies...">
+                </div>
+
+                <!-- Question 7 -->
+                <div class="question-container" id="q7">
+                    <div class="question-number">Question 7</div>
+                    <div class="question-text">Do you have any chronic diseases
+                        or ongoing health conditions?</div>
+                    <textarea class="answer-input" id="a7"
+                        placeholder="List any chronic conditions (e.g., diabetes, hypertension, asthma)..."></textarea>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="form-navigation">
+                    <button class="nav-btn" id="prevBtn" disabled>
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button class="nav-btn" id="nextBtn">
+                        <i class="fas fa-arrow-right"></i>
+                        Next
+                    </button>
+                </div>
+            </div>
+
+            <!-- Summary Section -->
+            <div class="summary-container" id="summarySection">
+                <h2 class="summary-header">Pre-Consultation Summary</h2>
+                <div class="summary-item">
+                    <div class="summary-question">Session Type:</div>
+                    <div class="summary-answer"
+                        id="summarySessionType">Appointment</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-question">What is the issue that brought
+                        you to the hospital?</div>
+                    <div class="summary-answer" id="summaryQ1">Not
+                        answered</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-question">How long has this pain or
+                        issue been happening?</div>
+                    <div class="summary-answer" id="summaryQ2">Not
+                        answered</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-question">Is it getting worse on a daily
+                        basis?</div>
+                    <div class="summary-answer" id="summaryQ3">Not
+                        answered</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-question">Pain severity rating
+                        (1-10):</div>
+                    <div class="summary-answer" id="summaryQ4">Not
+                        answered</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-question">Medication taken for this
+                        issue:</div>
+                    <div class="summary-answer" id="summaryQ5">Not
+                        answered</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-question">Allergies:</div>
+                    <div class="summary-answer" id="summaryQ6">Not
+                        answered</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-question">Chronic diseases or ongoing
+                        health conditions:</div>
+                    <div class="summary-answer" id="summaryQ7">Not
+                        answered</div>
+                </div>
+
+                <button class="submit-btn" id="submitBtn"
+                    onclick="window.location.href='PatientSummary.html'">
+                    <i class="fas fa-paper-plane"></i> Submit Pre-Consultation
+                    Form
+                </button>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer">
+                <div class="llamacare-badge">
+                    <i class="fas fa-heartbeat"></i> LlamaCare Medical System
+                </div>
+                <p>Wait Mate Pre-Consultation Session &copy; 2025</p>
+                <p>"Where understanding meets comfort"</p>
+            </div>
+        </div>
+        <script>
+            const storedName = localStorage.getItem('patientName');
+
+    if (!storedName) { 
+        window.location.href = 'nameEntry.html'; 
+    } else { 
+        document.getElementById('patientName').textContent = storedName;
+        document.getElementById('modalPatientName').textContent = storedName;
+    }
+/* ===== WaitMate Pre-Consultation Script ===== */
+
+// ----- Helper: Get current patient name -----
+function getCurrentPatientName() {
+    // ===== DATABASE INITIALIZATION - Add this to ALL pages =====
+// This should be added at the beginning of each page's script section
+
+// Function to get current patient from database
+function getCurrentPatient() {
+    // First try to get from localStorage
+    const savedPatient = localStorage.getItem('llamacare_current_patient');
+    
+    if (savedPatient) {
+        return savedPatient;
+    }
+    
+    // If no saved patient, use the random selection from the array
+    const patientNames = ["Rearabetswe Sons", "Neo Letswalo", "Enoch Emmanuel", "Kamogelo Mvemve", "Tinyiko Selamolela"];
+    const randomIndex = Math.floor(Math.random() * patientNames.length);
+    const randomPatient = patientNames[randomIndex];
+    
+    // Save this random patient for consistency across the session
+    localStorage.setItem('llamacare_current_patient', randomPatient);
+    
+    return randomPatient;
+}
+
+// Function to get patient data from database
+function getPatientData(patientName) {
+    const patientList = JSON.parse(localStorage.getItem('llamacare_patient_list') || '[]');
+    
+    // Find patient by name
+    const patientData = patientList.find(patient => 
+        patient.name.toLowerCase() === patientName.toLowerCase()
+    );
+    
+    if (patientData) {
+        return patientData;
+    }
+    
+    // If not found in registration data, return default data
+    return {
+        name: patientName,
+        id: 'LLC-' + Math.floor(1000 + Math.random() * 9000),
+        registrationDate: new Date().toISOString().split('T')[0]
+    };
+}
+
+// Function to get initials from a full name
+function getInitials(fullName) {
+    if (!fullName) return 'LL';
+    
+    return fullName
+        .split(' ')
+        .map(word => word[0])
+        .join('')
+        .toUpperCase();
+}
+
+// Function to update patient info on page
+function updatePatientInfoOnPage() {
+    const patientName = getCurrentPatient();
+    const patientInitials = getInitials(patientName);
+    const patientData = getPatientData(patientName);
+    
+    // Update patient name on page (if element exists)
+    const patientNameElement = document.getElementById('patientName');
+    if (patientNameElement) {
+        patientNameElement.textContent = patientName;
+    }
+    
+    // Update patient avatar with initials (if element exists)
+    const patientAvatarElement = document.getElementById('patientAvatar');
+    if (patientAvatarElement) {
+        patientAvatarElement.textContent = patientInitials;
+    }
+    
+    // Update patient ID (if element exists)
+    const patientIdElement = document.getElementById('patientId');
+    if (patientIdElement && patientData.id) {
+        patientIdElement.textContent = patientData.id;
+    }
+    
+    // Update database patient name (if element exists)
+    const dbPatientNameElement = document.getElementById('dbPatientName');
+    if (dbPatientNameElement) {
+        dbPatientNameElement.textContent = patientName;
+    }
+    
+    // Update notification patient name (if element exists)
+    const notificationPatientElement = document.getElementById('notificationPatientName');
+    if (notificationPatientElement) {
+        notificationPatientElement.textContent = patientName;
+    }
+    
+    console.log(`Current patient: ${patientName} (${patientInitials})`, patientData);
+    return patientName;
+}
+
+// Call this function when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Update patient info
+    updatePatientInfoOnPage();
+    
+    // Rest of your existing DOMContentLoaded code...
+    // [Keep all your existing code here]
+});
+  // Try JSON objects first
+  const keys = ["currentUser", "loggedInUser", "user", "patient", "patientUser"];
+  for (const k of keys) {
+    try {
+      const raw = localStorage.getItem(k);
+      if (!raw) continue;
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.name) return parsed.name;
+    } catch (e) { /* ignore */ }
+  }
+  // Fallback to simple patientName
+  return localStorage.getItem("patientName") || "Unknown Patient";
+}
+
+// ----- Save/load answers per patient -----
+function getAnswersKey() {
+  return `answers_${getCurrentPatientName()}`;
+}
+
+function saveAnswers() {
+  localStorage.setItem(getAnswersKey(), JSON.stringify(answers));
+}
+
+function loadAnswers() {
+  const stored = localStorage.getItem(getAnswersKey());
+  if (stored) answers = JSON.parse(stored);
+}
+
+// ----- Safe DOM setter -----
+function setTextIfExists(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+
+// ----- Update summary section -----
+function updateSummary() {
+  const name = getCurrentPatientName();
+  setTextIfExists("patientName", `${name}'s WaitMate Summary`);
+  setTextIfExists("modalPatientName", name);
+  setTextIfExists("dynamicPatientName", name);
+  setTextIfExists("userName", name);
+  setTextIfExists("profileName", name);
+
+  if (summaryQ1) summaryQ1.textContent = answers.q1 || 'Not answered';
+  if (summaryQ2) summaryQ2.textContent = answers.q2 || 'Not answered';
+  if (summaryQ3) summaryQ3.textContent = answers.q3 || 'Not answered';
+  if (summaryQ4) summaryQ4.textContent = answers.q4 || 'Not answered';
+  if (summaryQ5) summaryQ5.textContent = answers.q5 || 'Not answered';
+  if (summaryQ6) summaryQ6.textContent = (answers.q6 && answers.q6.length) ? answers.q6.join(', ') : 'No known allergies';
+  if (summaryQ7) summaryQ7.textContent = answers.q7 || 'Not answered';
+
+  if (summarySessionType) summarySessionType.textContent = sessionChoice || 'Appointment';
+}
+
+// ----- Show specific question -----
+function showQuestion(index) {
+  const all = document.querySelectorAll('.question-container');
+  all.forEach(q => q.classList.remove('active'));
+  const current = document.getElementById(`q${index}`);
+  if (current) current.classList.add('active');
+
+  if (currentQuestion) currentQuestion.textContent = String(index);
+  if (prevBtn) prevBtn.disabled = index === 1;
+  if (nextBtn) nextBtn.innerHTML = index === 7 ? 'Review Answers' : 'Next';
+
+  updateProgressBar();
+  loadQuestionAnswer(index);
+}
+
+// ----- Load a question's answer from answers object -----
+function loadQuestionAnswer(index) {
+  switch(index) {
+    case 1:
+      const a1 = document.getElementById('a1'); if(a1) a1.value = answers.q1 || ''; break;
+    case 2:
+      const a2custom = document.getElementById('a2-custom');
+      document.querySelectorAll('#q2 .option-btn').forEach(btn => btn.classList.remove('selected'));
+      if (answers.q2) {
+        const btn = document.querySelector(`#q2 .option-btn[data-value="${answers.q2}"]`);
+        if(btn) btn.classList.add('selected');
+        if (a2custom) a2custom.value = '';
+      }
+      break;
+    case 3:
+      document.querySelectorAll('#q3 .option-btn').forEach(btn => btn.classList.remove('selected'));
+      if (answers.q3) {
+        const btn = document.querySelector(`#q3 .option-btn[data-value="${answers.q3}"]`);
+        if(btn) btn.classList.add('selected');
+      }
+      break;
+    case 4:
+      document.querySelectorAll('#q4 .rating-btn').forEach(btn => btn.classList.remove('selected'));
+      if (answers.q4) {
+        const btn = document.querySelector(`#q4 .rating-btn[data-value="${answers.q4}"]`);
+        if(btn) btn.classList.add('selected');
+      }
+      break;
+    case 5:
+      const a5custom = document.getElementById('a5-custom');
+      document.querySelectorAll('#q5 .option-btn').forEach(btn => btn.classList.remove('selected'));
+      if (answers.q5) {
+        const btn = document.querySelector(`#q5 .option-btn[data-value="${answers.q5}"]`);
+        if(btn) btn.classList.add('selected');
+        if (a5custom) a5custom.value = '';
+      }
+      break;
+    case 6:
+      document.querySelectorAll('#q6 input[type="checkbox"]').forEach(cb => cb.checked = false);
+      if (answers.q6 && answers.q6.length) {
+        const map = {
+          'None': 'allergy-none',
+          'Medication allergies': 'allergy-medication',
+          'Food allergies': 'allergy-food',
+          'Environmental allergies': 'allergy-environmental',
+          'Latex allergy': 'allergy-latex',
+          'Other': 'allergy-other'
+        };
+        answers.q6.forEach(val => {
+          const id = map[val];
+          if(id) document.getElementById(id).checked = true;
+        });
+      }
+      if(a6custom) a6custom.value = '';
+      break;
+    case 7:
+      const a7 = document.getElementById('a7'); if(a7) a7.value = answers.q7 || ''; break;
+  }
+}
+
+// ----- Save answer from input/buttons -----
+function saveQuestionAnswer(index) {
+  switch(index) {
+    case 1:
+      const a1 = document.getElementById('a1'); answers.q1 = a1 ? a1.value.trim() : ''; break;
+    case 2:
+      const sel2 = document.querySelector('#q2 .option-btn.selected');
+      const a2custom = document.getElementById('a2-custom');
+      answers.q2 = (a2custom && a2custom.value.trim()) || (sel2 ? sel2.dataset.value : ''); break;
+    case 3:
+      const sel3 = document.querySelector('#q3 .option-btn.selected'); answers.q3 = sel3 ? sel3.dataset.value : ''; break;
+    case 4:
+      const sel4 = document.querySelector('#q4 .rating-btn.selected'); answers.q4 = sel4 ? sel4.dataset.value : ''; break;
+    case 5:
+      const sel5 = document.querySelector('#q5 .option-btn.selected');
+      const a5custom = document.getElementById('a5-custom');
+      answers.q5 = (a5custom && a5custom.value.trim()) || (sel5 ? sel5.dataset.value : ''); break;
+    case 6:
+      const checked = [];
+      document.querySelectorAll('#q6 input[type="checkbox"]:checked').forEach(cb => checked.push(cb.value));
+      const a6custom = document.getElementById('a6-custom');
+      if(a6custom && a6custom.value.trim()) checked.push(a6custom.value.trim());
+      answers.q6 = checked; break;
+    case 7:
+      const a7 = document.getElementById('a7'); answers.q7 = a7 ? a7.value.trim() : ''; break;
+  }
+  saveAnswers();  // Save per patient immediately
+  updateSummary(); // Always update summary dynamically
+}
+
+// ----- Update progress bar -----
+function updateProgressBar() {
+  if(progressBar) progressBar.style.width = `${(currentQuestionIndex/7)*100}%`;
+}
+
+// ----- Initialize variables -----
+let currentQuestionIndex = 1;
+let sessionChoice = '';
+let answers = { q1:'', q2:'', q3:'', q4:'', q5:'', q6:[], q7:'' };
+
+// DOM elements
+const patientName = document.getElementById("patientName");
+const modalPatientName = document.getElementById("modalPatientName");
+const qaForm = document.getElementById("qaForm");
+const summarySection = document.getElementById("summarySection");
+const appointmentBtn = document.getElementById("appointmentBtn");
+const consultationBtn = document.getElementById("consultationBtn");
+const sessionType = document.getElementById("sessionType");
+const summarySessionType = document.getElementById("summarySessionType");
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const currentQuestion = document.getElementById('currentQuestion');
+const progressBar = document.getElementById('progressBar');
+const submitBtn = document.getElementById('submitBtn');
+
+const summaryQ1 = document.getElementById('summaryQ1');
+const summaryQ2 = document.getElementById('summaryQ2');
+const summaryQ3 = document.getElementById('summaryQ3');
+const summaryQ4 = document.getElementById('summaryQ4');
+const summaryQ5 = document.getElementById('summaryQ5');
+const summaryQ6 = document.getElementById('summaryQ6');
+const summaryQ7 = document.getElementById('summaryQ7');
+
+// ----- DOM Ready -----
+document.addEventListener('DOMContentLoaded', () => {
+  // Load latest patient answers
+  loadAnswers();
+  updateSummary();
+  showQuestion(currentQuestionIndex);
+
+  // Theme toggle
+  const themeToggle = document.getElementById('themeToggle');
+  if(themeToggle) themeToggle.addEventListener('click', ()=>{
+    document.body.classList.toggle('dark-mode');
+    themeToggle.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+  });
+
+  // Session choice buttons
+  if(appointmentBtn) appointmentBtn.addEventListener('click', () => {
+    sessionChoice = 'Appointment';
+    if(sessionType) sessionType.textContent = sessionChoice;
+    if(summarySessionType) summarySessionType.textContent = sessionChoice;
+    if(choiceModal) choiceModal.style.display = 'none';
+    if(qaForm) qaForm.classList.add('active');
+    updateSummary();
+  });
+  if(consultationBtn) consultationBtn.addEventListener('click', () => {
+    sessionChoice = 'Consultation';
+    if(sessionType) sessionType.textContent = sessionChoice;
+    if(summarySessionType) summarySessionType.textContent = sessionChoice;
+    if(choiceModal) choiceModal.style.display = 'none';
+    if(qaForm) qaForm.classList.add('active');
+    updateSummary();
+  });
+
+  // Prev/Next buttons
+  if(prevBtn) prevBtn.addEventListener('click', ()=>{
+    if(currentQuestionIndex >1){
+      saveQuestionAnswer(currentQuestionIndex);
+      currentQuestionIndex--;
+      showQuestion(currentQuestionIndex);
+    }
+  });
+  if(nextBtn) nextBtn.addEventListener('click', ()=>{
+    saveQuestionAnswer(currentQuestionIndex);
+    if(currentQuestionIndex<7){
+      currentQuestionIndex++;
+      showQuestion(currentQuestionIndex);
+    }else{
+      if(qaForm) qaForm.classList.remove('active');
+      if(summarySection) summarySection.classList.add('active');
+      updateSummary();
+    }
+  });
+
+  // Option buttons
+  document.querySelectorAll('.option-btn').forEach(btn => {
+    btn.addEventListener('click', function(){
+      const parentQ = this.closest('.question-container');
+      if(parentQ) parentQ.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected'));
+      this.classList.add('selected');
+
+      // Clear custom inputs if option chosen
+      if(this.closest('#q2')) { const a2 = document.getElementById('a2-custom'); if(a2) a2.value=''; }
+      if(this.closest('#q5')) { const a5 = document.getElementById('a5-custom'); if(a5) a5.value=''; }
+
+      saveQuestionAnswer(parseInt(parentQ.id.slice(1)));
+    });
+  });
+
+  // Rating buttons
+  document.querySelectorAll('.rating-btn').forEach(btn => {
+    btn.addEventListener('click', function(){
+      const parent = this.parentElement;
+      parent.querySelectorAll('.rating-btn').forEach(b=>b.classList.remove('selected'));
+      this.classList.add('selected');
+      saveQuestionAnswer(4);
+    });
+  });
+
+  // Custom input listeners
+  const a2customInput = document.getElementById('a2-custom');
+  if(a2customInput) a2customInput.addEventListener('input', ()=>{ document.querySelectorAll('#q2 .option-btn').forEach(btn=>btn.classList.remove('selected')); saveQuestionAnswer(2); });
+
+  const a5customInput = document.getElementById('a5-custom');
+  if(a5customInput) a5customInput.addEventListener('input', ()=>{ document.querySelectorAll('#q5 .option-btn').forEach(btn=>btn.classList.remove('selected')); saveQuestionAnswer(5); });
+
+  const a6customInput = document.getElementById('a6-custom');
+  if(a6customInput) a6customInput.addEventListener('input', ()=> saveQuestionAnswer(6));
+
+  document.querySelectorAll('#q6 input[type="checkbox"]').forEach(cb => cb.addEventListener('change', ()=>saveQuestionAnswer(6)));
+
+  // Submit button
+  if(submitBtn) submitBtn.addEventListener('click', ()=>{
+    saveAnswers();
+    alert("Pre-consultation submitted for " + getCurrentPatientName());
+    setTimeout(()=>{ window.location.href='DashBoard2.html'; },200);
+  });
+
+  // Listen for storage changes from other tabs
+  window.addEventListener('storage', (event)=>{
+    if(event.key && event.key.startsWith('answers_') || event.key === 'patientName'){
+      loadAnswers();
+      updateSummary();
+    }
+  });
+});
+</script>
+
+
+    </body>
+</html>

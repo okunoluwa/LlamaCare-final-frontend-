@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>LlamaCare - Anaesthesia Buddy</title>
+        <link rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+        /* Color variables for light mode */
+        :root {
+            --primary-blue: #3498db;
+            --secondary-green: #2ecc71;
+            --dark-text: #2c3e50;
+            --light-text: #7f8c8d;
+            --background: #f0f9ff;
+            --white: #ffffff;
+            --input-border: #ecf0f1;
+            --input-focus: #3498db;
+            --card-bg: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --gradient-bg: linear-gradient(to right, #3498db, #2ecc71);
+            --calm-purple: #9b59b6;
+            --calm-teal: #1abc9c;
+            --calm-orange: #e67e22;
+        }
+        
+        /* Dark mode variables */
+        .dark-mode {
+            --primary-blue: #2980b9;
+            --secondary-green: #27ae60;
+            --dark-text: #ecf0f1;
+            --light-text: #bdc3c7;
+            --background: #1a1a2e;
+            --white: #2c3e50;
+            --input-border: #34495e;
+            --input-focus: #3498db;
+            --card-bg: #2c3e50;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --gradient-bg: linear-gradient(to right, #2980b9, #27ae60);
+            --calm-purple: #8e44ad;
+            --calm-teal: #16a085;
+            --calm-orange: #d35400;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--dark-text);
+            min-height: 100vh;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(52, 152, 219, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(155, 89, 182, 0.1) 0%, transparent 20%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            background: var(--gradient-bg);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-text);
+            letter-spacing: 1px;
+        }
+        
+        /* Patient info and controls */
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .patient-info {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .patient-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--gradient-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .patient-name {
+            font-weight: 600;
+            color: var(--dark-text);
+            font-size: 1.1rem;
+        }
+        
+        .mode-toggle {
+            background: var(--gradient-bg);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .mode-toggle:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        /* Page Title */
+        .page-title {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .page-title h1 {
+            font-size: 2.2rem;
+            color: var(--dark-text);
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-title p {
+            font-size: 1.2rem;
+            color: var(--light-text);
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        /* Safety Note */
+        .safety-note {
+            background-color: rgba(243, 156, 18, 0.1);
+            border-left: 4px solid var(--calm-orange);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2.5rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .safety-note h3 {
+            color: var(--dark-text);
+            margin-bottom: 0.5rem;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .safety-note p {
+            color: var(--light-text);
+            line-height: 1.6;
+        }
+        
+        /* Calm Mode Dropdown */
+        .calm-mode-section {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px var(--shadow-color);
+            margin-bottom: 2.5rem;
+            text-align: center;
+        }
+        
+        .calm-mode-section h2 {
+            color: var(--dark-text);
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+        
+        .calm-dropdown-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+        
+        .calm-dropdown-btn {
+            background: linear-gradient(to right, var(--calm-purple), var(--calm-teal));
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            box-shadow: 0 8px 20px rgba(155, 89, 182, 0.4);
+        }
+        
+        .calm-dropdown-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(155, 89, 182, 0.5);
+        }
+        
+        .calm-dropdown-content {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            margin-top: 0.8rem;
+            box-shadow: 0 10px 25px var(--shadow-color);
+            display: none;
+            z-index: 100;
+            overflow: hidden;
+            border: 1px solid var(--input-border);
+        }
+        
+        .calm-option {
+            padding: 1.2rem 1.5rem;
+            color: var(--dark-text);
+            cursor: pointer;
+            border-bottom: 1px solid var(--input-border);
+            transition: background-color 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .calm-option:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .calm-option:last-child {
+            border-bottom: none;
+        }
+        
+        .calm-icon {
+            font-size: 1.5rem;
+        }
+        
+        .guided-breathing-icon {
+            color: var(--calm-teal);
+        }
+        
+        .audio-reassurance-icon {
+            color: var(--primary-blue);
+        }
+        
+        .family-connection-icon {
+            color: var(--calm-purple);
+        }
+        
+        .cultural-support-icon {
+            color: var(--calm-orange);
+        }
+        
+        /* Content Display Area */
+        .content-display {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px var(--shadow-color);
+            margin-bottom: 2.5rem;
+            display: none;
+        }
+        
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .content-header h3 {
+            color: var(--dark-text);
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .language-selector {
+            position: relative;
+        }
+        
+        .language-dropdown {
+            background-color: var(--card-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            padding: 0.8rem 1.2rem;
+            color: var(--dark-text);
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            min-width: 180px;
+        }
+        
+        .language-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: var(--card-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            margin-top: 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 10px 25px var(--shadow-color);
+        }
+        
+        .language-item {
+            padding: 0.8rem 1.2rem;
+            color: var(--dark-text);
+            cursor: pointer;
+            border-bottom: 1px solid var(--input-border);
+            transition: background-color 0.2s ease;
+        }
+        
+        .language-item:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+        
+        .language-item.active {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+        
+        /* Content Sections */
+        .content-body {
+            line-height: 1.7;
+            color: var(--dark-text);
+            font-size: 1.1rem;
+        }
+        
+        .llama-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(to right, var(--calm-purple), var(--calm-teal));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        /* Breathing Exercise */
+        .breathing-exercise {
+            text-align: center;
+            padding: 2rem;
+            background-color: rgba(26, 188, 156, 0.05);
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .breathing-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: linear-gradient(to right, var(--calm-teal), var(--primary-blue));
+            margin: 0 auto 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            box-shadow: 0 10px 20px rgba(26, 188, 156, 0.3);
+            transition: transform 4s ease;
+        }
+        
+        .breathing-instructions {
+            margin-bottom: 1.5rem;
+        }
+        
+        .breathing-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--calm-teal);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+        
+        .breathing-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        
+        /* Audio Reassurance */
+        .audio-player {
+            background-color: rgba(52, 152, 219, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .audio-btn {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .audio-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .progress-bar {
+            flex-grow: 1;
+            height: 8px;
+            background-color: var(--input-border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: var(--primary-blue);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .audio-time {
+            color: var(--light-text);
+            font-size: 0.9rem;
+            min-width: 100px;
+            text-align: center;
+        }
+        
+        /* Family Connection */
+        .family-connection-form {
+            background-color: rgba(155, 89, 182, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+        
+        .form-label {
+            display: block;
+            color: var(--dark-text);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            border: 1px solid var(--input-border);
+            border-radius: 10px;
+            font-size: 1rem;
+            color: var(--dark-text);
+            background-color: var(--card-bg);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--calm-purple);
+            box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.2);
+        }
+        
+        .phone-input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .add-phone-btn {
+            background-color: var(--calm-purple);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .add-phone-btn:hover {
+            background-color: #8e44ad;
+            transform: translateY(-2px);
+        }
+        
+        /* Cultural Support */
+        .content-filters {
+            background-color: rgba(230, 126, 34, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .filter-option {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-option:hover {
+            background-color: rgba(230, 126, 34, 0.1);
+        }
+        
+        .filter-option.selected {
+            background-color: rgba(230, 126, 34, 0.2);
+            border-left: 4px solid var(--calm-orange);
+        }
+        
+        .filter-checkbox {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--calm-orange);
+        }
+        
+        .cultural-message {
+            background-color: rgba(230, 126, 34, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            text-align: center;
+            font-style: italic;
+            color: var(--dark-text);
+            line-height: 1.6;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            background: var(--gradient-bg);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(52, 152, 219, 0.5);
+        }
+        
+        .action-btn.secondary {
+            background: linear-gradient(to right, var(--calm-purple), var(--calm-teal));
+            box-shadow: 0 8px 20px rgba(155, 89, 182, 0.4);
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--input-border);
+            color: var(--light-text);
+            font-size: 0.9rem;
+        }
+        
+        .footer-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            background-color: rgba(52, 152, 219, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--dark-text);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+            
+            .header-controls {
+                justify-content: center;
+            }
+            
+            .page-title h1 {
+                font-size: 1.8rem;
+            }
+            
+            .calm-dropdown-btn {
+                padding: 0.9rem 2rem;
+                font-size: 1.3rem;
+            }
+            
+            .breathing-circle {
+                width: 150px;
+                height: 150px;
+            }
+            
+            .phone-input-group {
+                flex-direction: column;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .logo-text {
+                font-size: 1.8rem;
+            }
+            
+            .page-title h1 {
+                font-size: 1.6rem;
+            }
+            
+            .calm-dropdown-btn {
+                font-size: 1.2rem;
+            }
+            
+            .content-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .language-dropdown {
+                min-width: 100%;
+            }
+
+            /* POP-UP */
+            .popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.popup-content {
+    background: #fff;
+    padding: 25px;
+    text-align: center;
+    border-radius: 12px;
+    width: 280px;
+}
+
+.popup-content i {
+    font-size: 40px;
+    color: #28a745;
+    margin-bottom: 10px;
+}
+
+.popup-content button {
+    margin-top: 15px;
+    padding: 8px 20px;
+    border: none;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+        }
+    </style>
+    </head>
+    <body>
+        <div class="container">
+            <!-- Header -->
+            <header class="header">
+                <div class="logo-container">
+                    <i class="fas fa-heartbeat logo-icon"></i>
+                    <h1 class="logo-text">LlamaCare</h1>
+                </div>
+
+                <div class="header-controls">
+                    <div class="patient-info">
+                        <div class="patient-avatar" id="patientAvatar">RS</div>
+                        <div class="patient-name" id="patientName">Rearabetswe
+                            Sons</div>
+                    </div>
+
+                    <button class="mode-toggle" id="modeToggle">
+                        <i class="fas fa-moon"></i> Dark Mode
+                    </button>
+                </div>
+            </header>
+
+            <!-- Page Title -->
+            <div class="page-title">
+                <h1>Anaesthesia Buddy</h1>
+                <h3>Pre-op Reminders + Anxiety Reduction</h3>
+                <p>Your personal companion for managing pre-surgery anxiety with
+                    guided support</p>
+            </div>
+
+            <!-- Safety Note -->
+            <div class="safety-note">
+                <h3><i class="fas fa-exclamation-triangle"></i> Important Safety
+                    Note</h3>
+                <p>This content is designed for general calming and anxiety
+                    reduction. It is not a substitute for professional medical
+                    or psychiatric care. If you experience severe anxiety,
+                    please speak to a healthcare professional immediately. All
+                    content is generic, non-clinical, and culturally
+                    sensitive.</p>
+            </div>
+
+            <!-- Calm Mode Dropdown -->
+            <div class="calm-mode-section">
+                <h2>Select Your Calm Mode</h2>
+
+                <div class="calm-dropdown-container">
+                    <button class="calm-dropdown-btn" id="calmDropdownBtn">
+                        <i class="fas fa-spa"></i> Calm Mode
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+
+                    <div class="calm-dropdown-content" id="calmDropdownContent">
+                        <div class="calm-option" data-option="breathing">
+                            <i
+                                class="fas fa-wind calm-icon guided-breathing-icon"></i>
+                            <span>Guided Breathing</span>
+                        </div>
+
+                        <div class="calm-option" data-option="audio">
+                            >
+                            <i
+                                class="fas fa-volume-up calm-icon audio-reassurance-icon"></i>
+                            <span>Audio Reassurance</span>
+                        </div>
+
+                        <div class="calm-option" data-option="family">
+                            <i
+                                class="fas fa-users calm-icon family-connection-icon"></i>
+                            <span>Family Connection Messages</span>
+                        </div>
+
+                        <div class="calm-option" data-option="cultural">
+                            <i
+                                class="fas fa-hands-praying calm-icon cultural-support-icon"></i>
+                            <span>Cultural/Spiritual Support</span>
+                        </div>
+                    </div>
+                </div>
+
+                <p
+                    style="color: var(--light-text); max-width: 600px; margin: 0 auto; line-height: 1.6;">
+                    Choose a calming activity to help reduce your anxiety before
+                    surgery. All content is generated by the LlamaCare AI model
+                    in your preferred language.
+                </p>
+            </div>
+
+            <!-- Content Display Area -->
+            <div class="content-display" id="contentDisplay">
+                <div class="content-header">
+                    <h3 id="contentTitle">
+                        <i class="fas fa-wind guided-breathing-icon"></i> Guided
+                        Breathing
+                    </h3>
+
+                    <div class="language-selector">
+                        <div class="language-dropdown" id="languageDropdown">
+                            <i class="fas fa-language"></i>
+                            <span id="selectedLanguage">English</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+
+                        <div class="language-list" id="languageList">
+                            <div class="language-item active"
+                                data-lang="en">English</div>
+                            <div class="language-item"
+                                data-lang="zu">isiZulu</div>
+                            <div class="language-item"
+                                data-lang="xh">isiXhosa</div>
+                            <div class="language-item"
+                                data-lang="nso">Sepedi</div>
+                            <div class="language-item"
+                                data-lang="tn">Setswana</div>
+                            <div class="language-item"
+                                data-lang="st">Sesotho</div>
+                            <div class="language-item"
+                                data-lang="nr">isiNdebele</div>
+                            <div class="language-item"
+                                data-lang="ts">Xitsonga</div>
+                            <div class="language-item"
+                                data-lang="ve">Tshivenda</div>
+                            <div class="language-item"
+                                data-lang="af">Afrikaans</div>
+                            <div class="language-item"
+                                data-lang="ss">siSwati</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="llama-badge">
+                    <i class="fas fa-robot"></i> Generated by LlamaCare AI Model
+                    v3.2
+                </div>
+
+                <div class="content-body" id="contentBody">
+                    <!-- Content will be dynamically loaded here -->
+                </div>
+
+                <div class="action-buttons">
+                    <button class="action-btn" id="startActivityBtn">
+                        <i class="fas fa-play"></i> Start Activity
+                    </button>
+
+                    <button class="action-btn" id="sendToFamilyBtn"
+                        style="display:none;">
+                        <i class="fas fa-paper-plane"></i> Send to Family
+                    </button>
+
+                    <div id="familyPopup" class="popup" style="display:none;">
+                        <div class="popup-content">
+                            <i class="fas fa-check-circle"></i>
+                            <h3>Message Sent!</h3>
+                            <p>Your message has been sent to your family
+                                successfully.</p>
+                            <button id="closePopupBtn">OK</button>
+                        </div>
+                    </div>
+
+                    <button class="action-btn secondary" id="backToMenuBtn">
+                        <i class="fas fa-arrow-left"></i> Back to Menu
+                    </button>
+                </div>
+            </div>
+
+            <!-- Content Display Area 2-->
+            <div class="content-display" id="contentDisplay">
+                <div class="content-header">
+                    <h3 id="contentTitle">
+                        <i class="fas fa-audio-description"></i> Audio
+                        Reassurance
+                    </h3>
+
+                    <!-- AUDIO REASSURANCE PLAYER -->
+                    <audio id="reassuranceAudio"
+                        src="audio/reassurance.mp3"></audio>
+
+                    <div class="audio-player" id="audioPlayer"
+                        style="display:none;">
+                        <button id="playAudioBtn" class="audio-btn">
+                            <i class="fas fa-play"></i>
+                        </button>
+
+                        <div class="progress-bar">
+                            <div class="progress" id="audioProgress"></div>
+                        </div>
+
+                        <div class="audio-time" id="audioTime">0:00 / 0:00</div>
+                    </div>
+                    <button class="action-btn secondary" id="backToMenuBtn">
+                        <i class="fas fa-arrow-left"></i> Back to Menu
+                    </button>
+                </div>
+            </div>
+
+            <div> <button class="action-btn secondary" id="backToMenuBtn"
+                    onclick="window.location.href='ToContinueBoard.html'">
+                    <i class="fas fa-arrow-left"></i> Back to Menu
+                </button>
+            </div>
+
+            <!-- Footer -->
+            <footer>
+                <p>LlamaCare &copy; 2025.
+                    "Where understanding meets comfort"</p>
+                <div class="footer-badges">
+                    <span class="badge">Non-Clinical Support</span>
+                    <span class="badge">AI-Powered Content</span>
+                    <span class="badge">Cultural Sensitivity</span>
+                    <span class="badge">Patient Safety First</span>
+                </div>
+            </footer>
+        </div>
+
+        <script>
+        // ===== DATABASE INITIALIZATION - Add this to ALL pages =====
+// This should be added at the beginning of each page's script section
+
+// Function to get current patient from database
+function getCurrentPatient() {
+    // First try to get from localStorage
+    const savedPatient = localStorage.getItem('llamacare_current_patient');
+    
+    if (savedPatient) {
+        return savedPatient;
+    }
+    
+    // If no saved patient, use the random selection from the array
+    const patientNames = ["Rearabetswe Sons", "Neo Letswalo", "Enoch Emmanuel", "Kamogelo Mvemve", "Tinyiko Selamolela"];
+    const randomIndex = Math.floor(Math.random() * patientNames.length);
+    const randomPatient = patientNames[randomIndex];
+    
+    // Save this random patient for consistency across the session
+    localStorage.setItem('llamacare_current_patient', randomPatient);
+    
+    return randomPatient;
+}
+
+// Function to get patient data from database
+function getPatientData(patientName) {
+    const patientList = JSON.parse(localStorage.getItem('llamacare_patient_list') || '[]');
+    
+    // Find patient by name
+    const patientData = patientList.find(patient => 
+        patient.name.toLowerCase() === patientName.toLowerCase()
+    );
+    
+    if (patientData) {
+        return patientData;
+    }
+    
+    // If not found in registration data, return default data
+    return {
+        name: patientName,
+        id: 'LLC-' + Math.floor(1000 + Math.random() * 9000),
+        registrationDate: new Date().toISOString().split('T')[0]
+    };
+}
+
+// Function to get initials from a full name
+function getInitials(fullName) {
+    if (!fullName) return 'LL';
+    
+    return fullName
+        .split(' ')
+        .map(word => word[0])
+        .join('')
+        .toUpperCase();
+}
+
+// Function to update patient info on page
+function updatePatientInfoOnPage() {
+    const patientName = getCurrentPatient();
+    const patientInitials = getInitials(patientName);
+    const patientData = getPatientData(patientName);
+    
+    // Update patient name on page (if element exists)
+    const patientNameElement = document.getElementById('patientName');
+    if (patientNameElement) {
+        patientNameElement.textContent = patientName;
+    }
+    
+    // Update patient avatar with initials (if element exists)
+    const patientAvatarElement = document.getElementById('patientAvatar');
+    if (patientAvatarElement) {
+        patientAvatarElement.textContent = patientInitials;
+    }
+    
+    // Update patient ID (if element exists)
+    const patientIdElement = document.getElementById('patientId');
+    if (patientIdElement && patientData.id) {
+        patientIdElement.textContent = patientData.id;
+    }
+    
+    // Update database patient name (if element exists)
+    const dbPatientNameElement = document.getElementById('dbPatientName');
+    if (dbPatientNameElement) {
+        dbPatientNameElement.textContent = patientName;
+    }
+    
+    // Update notification patient name (if element exists)
+    const notificationPatientElement = document.getElementById('notificationPatientName');
+    if (notificationPatientElement) {
+        notificationPatientElement.textContent = patientName;
+    }
+    
+    console.log(`Current patient: ${patientName} (${patientInitials})`, patientData);
+    return patientName;
+}
+
+// Call this function when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Update patient info
+    updatePatientInfoOnPage();
+    
+    // Rest of your existing DOMContentLoaded code...
+    // [Keep all your existing code here]
+});
+        
+        // Current state
+        let currentPatient = "";
+        let currentLanguage = "en";
+        let currentOption = "breathing";
+        let isDarkMode = false;
+        let isBreathingActive = false;
+        let breathingInterval;
+        let audioPlaying = false;
+        
+        // Content data for different options and languages
+        const contentData = {
+            breathing: {
+                title: "Guided Breathing",
+                icon: "fa-wind",
+                colorClass: "guided-breathing-icon",
+                en: {
+                    title: "4-7-8 Breathing Exercise",
+                    instructions: "This simple breathing technique can help calm your nervous system. Follow these steps:",
+                    steps: [
+                        "Sit or lie down in a comfortable position",
+                        "Empty your lungs completely by exhaling through your mouth",
+                        "Close your mouth and inhale quietly through your nose for 4 seconds",
+                        "Hold your breath for 7 seconds",
+                        "Exhale completely through your mouth for 8 seconds",
+                        "Repeat this cycle 3-4 times"
+                    ],
+                    script: "Let's begin. Find a comfortable position. Close your eyes if you wish. Inhale slowly through your nose for four seconds... one... two... three... four. Now hold your breath for seven seconds... five... six... seven. Now exhale slowly through your mouth for eight seconds... feel the tension leaving your body... six... seven... eight. Let's do that again."
+                },
+                zu: {
+                    title: "Ukuphefumula Okuholwa",
+                    instructions: "Leli themba lokuphefumula elilula lingasiza ukuthola ukuthula kwesistimu yakho yezinzwa. Landela lezi zinyathelo:",
+                    steps: [
+                        "Hlala noma ulale endaweni ekhululekile",
+                        "Khipha wonke umoya wakho ngokukhipha umoya ngomlomo",
+                        "Vala umlomo wakho bese uphefumulela ngokuthula ngamakhala imizuzwana emi-4",
+                        "Bamba umoya wakho imizuzwana engu-7",
+                        "Khipha umoya ngokuphelele ngomlomo wakho imizuzwana eyi-8",
+                        "Phinda lesi sikilingi izikhathi ezingu-3-4"
+                    ],
+                    script: "Asiqale. Thola isimo esikhululekile. Vala amehlo akho uma uthanda. Ngokushesha, hefumula ngamakhala imizuzwana emine... nye... mbili... ntlantu... ne. Manje bamba umoya wakho imizuzwana eyisikhombisa... nye... mbili... ntlantu... ne... nhlanu... isithupha... isikhombisa. Manje khipha umoya ngokushesha ngomlomo wakho imizuzwana eyisishiyagalombili... zwa ukukhathazeka kuphuma emzimbeni wakho... nye... mbili... ntlantu... ne... nhlanu... isithupha... isikhombisa... isishiyagalombili. Asikwenze lokho futhi."
+                }
+            },
+            audio: {
+                title: "Audio Reassurance",
+                icon: "fa-volume-up",
+                colorClass: "audio-reassurance-icon",
+                en: {
+                    title: "Calming Audio Reassurance",
+                    message: "This audio message is designed to help you feel calm and reassured before your procedure. The LlamaCare AI has generated this script specifically for you.",
+                    script: "You are in good hands. The medical team is highly trained and experienced. They perform this procedure regularly. You are stronger than you know. This moment of anxiety will pass. Think of this as a step toward better health. Breathe slowly. You are safe. You are cared for. Everything is proceeding as planned. You will wake up feeling relief that it's over. Soon you'll be recovering, surrounded by people who care about you. This temporary discomfort leads to lasting wellness."
+                },
+                zu: {
+                    title: "Ukuqinisekiswa Komsindo",
+                    message: "Lo mlayezo womsindo uklanyelwe ukukusiza uzizwe uthulile futhi uqinisekiswe ngaphambi kwenqubo yakho. I-LlamaCare AI iklanyele le script ngokukhethekile kuwe.",
+                    script: "Usezandleni ezinhle. Iqembu lezokwelapha liqeqeshwe kakhulu futhi linexpilasi. Baphendula le nqubo njalo. Unamandla kunalokho owaziyo. Lesi sigaba sokukhathazeka sizodlula. Cabanga ngalokhu njengesinyathelo sokuba nenhlalakahle engcono. Phefumula kancane. Uphephile. Uyanakekelwa. Konke kuyahamba ngokuhlelayo. Uzovuka uzizwe ukhululekile ukuthi sekuphelile. Maduzane uzobe usaphila, uzungezwe abantu abanakekela ngawe. Lokhu kungakhululeki okwesikhashana kuholela enhlalakahle engapheli."
+                }
+            },
+            family: {
+                title: "Family Connection",
+                icon: "fa-users",
+                colorClass: "family-connection-icon",
+                en: {
+                    title: "Family Connection Messages",
+                    description: "Add phone numbers of family members or friends who you'd like to receive connection messages. You can schedule voice notes to be sent to them at specific times.",
+                    instruction: "Enter phone numbers below. You can add multiple numbers for different family members."
+                },
+                zu: {
+                    title: "Imiyalezo Yokuxhumana Nomndeni",
+                    description: "Faka izinombolo zocingo zamalungu omndeni noma abangane ofuna ukuthi bathole imiyalezo yokuxhumana. Ungahlela amaphuzu ephimbo azothunyelwa kubo ngezikhathi ezithile.",
+                    instruction: "Faka izinombolo zocingo ngezansi. Ungangeza izinombolo eziningi zamalungu omndeni ahlukene."
+                }
+            },
+            cultural: {
+                title: "Cultural/Spiritual Support",
+                icon: "fa-hands-praying",
+                colorClass: "cultural-support-icon",
+                en: {
+                    title: "Cultural and Spiritual Support",
+                    description: "Select the type of content that resonates with your cultural or spiritual beliefs. The LlamaCare AI will generate supportive messages appropriate for your selection.",
+                    filters: [
+                        "General Inspirational Messages",
+                        "Christian Prayers and Scriptures",
+                        "Islamic Prayers and Reminders",
+                        "Hindu Mantras and Blessings",
+                        "Traditional African Spiritual Support",
+                        "Jewish Prayers and Comfort",
+                        "Buddhist Meditations",
+                        "Non-Religious Mindfulness"
+                    ],
+                    message: "You are part of something greater than yourself. Whatever your beliefs, know that there is strength in faith and community. This moment of challenge will pass, and you will emerge stronger."
+                },
+                zu: {
+                    title: "Ukusekelwa Kwamasiko Nangokomoya",
+                    description: "Khetha uhlobo lokuqukethwe oluhambisana nezinkolelo zakho zamasiko noma zomoya. I-LlamaCare AI izokhiqiza imiyalezo yokusekela efanelekile kokukhethwa kwakho.",
+                    filters: [
+                        "Imiyalezo Ejwayelekile Yokugqugquzela",
+                        "Izithandiso ZobuKristu Nezincwadi Zobuwula",
+                        "Izithandiso ZobuSuluma Nezikhumbuzo",
+                        "AmaMantras Nobusiso BamaHindu",
+                        "Ukusekelwa Komoya Wendabuko Wase-Afrika",
+                        "Izithandiso ZobuJuda Nenduduzo",
+                        "Ukuzindla Kwezenkolo ZaseBuddha",
+                        "Ukuqaphela Okungekho Ezenkolweni"
+                    ],
+                    message: "Uyingxenye yento enkulu kunenawe. Noma yiziphi izinkolelo zakho, yazi ukuthi kunamandla ekholweni nasemphakathini. Lesi sigaba sezinselele sizodlula, futhi uzophuma unamandla."
+                }
+            }
+        };
+        
+        // Function to get initials from a full name
+        function getInitials(fullName) {
+            return fullName
+                .split(' ')
+                .map(word => word[0])
+                .join('')
+                .toUpperCase();
+        }
+        
+        // Function to select a random patient
+        function getRandomPatient() {
+            const randomIndex = Math.floor(Math.random() * patientNames.length);
+            return patientNames[randomIndex];
+        }
+        
+        // Function to update patient info
+        function updatePatientInfo() {
+            currentPatient = getRandomPatient();
+            const patientInitials = getInitials(currentPatient);
+            
+            // Update the patient name
+            document.getElementById('patientName').textContent = currentPatient;
+            
+            // Update the patient avatar with initials
+            document.getElementById('patientAvatar').textContent = patientInitials;
+            
+            console.log(`Current patient: ${currentPatient} (${patientInitials})`);
+        }
+        
+        // Function to toggle dark mode
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark-mode', isDarkMode);
+            
+            const modeToggle = document.getElementById('modeToggle');
+            if (isDarkMode) {
+                modeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            } else {
+                modeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+            }
+            
+            // Save preference to localStorage
+            localStorage.setItem('darkMode', isDarkMode);
+        }
+        
+        // Function to show calm mode dropdown
+        function toggleCalmDropdown() {
+            const dropdown = document.getElementById('calmDropdownContent');
+            const isVisible = dropdown.style.display === 'block';
+            dropdown.style.display = isVisible ? 'none' : 'block';
+        }
+        
+        // Function to select a calm mode option
+        function selectCalmOption(option) {
+            currentOption = option;
+            const optionData = contentData[option];
+            
+            // Update content title
+            document.getElementById('contentTitle').innerHTML = `
+                <i class="fas ${optionData.icon} ${optionData.colorClass}"></i> ${optionData.title}
+            `;
+            
+            // Show content display
+            document.getElementById('contentDisplay').style.display = 'block';
+            
+            // Close dropdown
+            document.getElementById('calmDropdownContent').style.display = 'none';
+            
+            // Populate content based on current language
+            populateContent(option, currentLanguage);
+            
+            // Scroll to content
+            document.getElementById('contentDisplay').scrollIntoView({ behavior: 'smooth' });
+            
+            console.log(`Selected option: ${optionData.title}`);
+        }
+        
+        // Function to populate content based on option and language
+        function populateContent(option, language) {
+            const contentBody = document.getElementById('contentBody');
+            const optionData = contentData[option];
+            const languageData = optionData[language] || optionData['en'];
+            
+            let contentHTML = '';
+            
+            switch(option) {
+                case 'breathing':
+                    contentHTML = `
+                        <div class="breathing-exercise">
+                            <div class="breathing-circle" id="breathingCircle">
+                                Breathe
+                            </div>
+                            
+                            <div class="breathing-instructions">
+                                <h4>${languageData.title}</h4>
+                                <p>${languageData.instructions}</p>
+                                
+                                ${languageData.steps.map((step, index) => `
+                                    <div class="breathing-step">
+                                        <div class="step-number">${index + 1}</div>
+                                        <div>${step}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            
+                            <div class="breathing-controls">
+                                <button class="action-btn" id="startBreathingBtn">
+                                    <i class="fas fa-play"></i> Start Breathing Exercise
+                                </button>
+                                <button class="action-btn secondary" id="stopBreathingBtn" style="display: none;">
+                                    <i class="fas fa-stop"></i> Stop
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 2rem;">
+                            <h4>Guided Script (Generated by Llama AI)</h4>
+                            <p style="color: var(--light-text); font-style: italic; line-height: 1.6;">
+                                ${languageData.script}
+                            </p>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'audio':
+                    contentHTML = `
+                        <div class="audio-player">
+                            <h4>${languageData.title}</h4>
+                            <p>${languageData.message}</p>
+                            
+                            <div class="audio-controls">
+                                <button class="audio-btn" id="playAudioBtn">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                
+                                <div class="progress-bar">
+                                    <div class="progress" id="audioProgress"></div>
+                                </div>
+                                
+                                <div class="audio-time" id="audioTime">0:00 / 1:45</div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 2rem;">
+                            <h4>Audio Script (Generated by Llama AI)</h4>
+                            <p style="color: var(--light-text); font-style: italic; line-height: 1.6;">
+                                ${languageData.script}
+                            </p>
+                            <p style="margin-top: 1rem; color: var(--light-text); font-size: 0.9rem;">
+                                <i class="fas fa-info-circle"></i> This script is converted to audio using an approved TTS (Text-to-Speech) engine with appropriate, consented voices.
+                            </p>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'family':
+                    contentHTML = `
+                        <div class="family-connection-form">
+                            <h4>${languageData.title}</h4>
+                            <p>${languageData.description}</p>
+                            <p><strong>${languageData.instruction}</strong></p>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Phone Number 1</label>
+                                <input type="tel" class="form-input" placeholder="e.g., +27 12 345 6789">
+                            </div>
+                            
+                            <div id="additionalPhones"></div>
+                            
+                            <button class="add-phone-btn" id="addPhoneBtn">
+                                <i class="fas fa-plus"></i> Add Another Phone Number
+                            </button>
+                            
+                            <div class="form-group" style="margin-top: 1.5rem;">
+                                <label class="form-label">Schedule Voice Notes</label>
+                                <select class="form-input">
+                                    <option>Send daily at 8 AM</option>
+                                    <option>Send 3 days before surgery</option>
+                                    <option>Send 1 day before surgery</option>
+                                    <option>Send morning of surgery</option>
+                                    <option>Custom schedule</option>
+                                </select>
+                            </div>
+                            
+                            <div style="margin-top: 2rem; padding: 1rem; background-color: rgba(155, 89, 182, 0.1); border-radius: 10px;">
+                                <h5><i class="fas fa-lightbulb"></i> How it works:</h5>
+                                <p style="color: var(--light-text); margin-top: 0.5rem;">
+                                    The LlamaCare AI will generate personalized voice notes for your loved ones, updating them on your surgery preparation and sending reassuring messages. All messages are culturally appropriate and comforting.
+                                </p>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'cultural':
+                    contentHTML = `
+                        <div class="content-filters">
+                            <h4>${languageData.title}</h4>
+                            <p>${languageData.description}</p>
+                            
+                            <h5 style="margin-top: 1.5rem; margin-bottom: 1rem;">Select content filters:</h5>
+                            
+                            ${languageData.filters.map((filter, index) => `
+                                <div class="filter-option ${index === 0 ? 'selected' : ''}" data-filter="${index}">
+                                    <input type="checkbox" class="filter-checkbox" ${index === 0 ? 'checked' : ''}>
+                                    <span>${filter}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        
+                        <div class="cultural-message">
+                            <h5><i class="fas fa-quote-left"></i> Supportive Message</h5>
+                            <p>${languageData.message}</p>
+                            <p style="margin-top: 1rem; font-size: 0.9rem;">
+                                <i class="fas fa-shield-alt"></i> All content is generated with cultural sensitivity and respect for diversity.
+                            </p>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            contentBody.innerHTML = contentHTML;
+            
+            // Set up event listeners for dynamic content
+            setupDynamicContent(option);
+        }
+        
+        // Function to set up dynamic content interactions
+        function setupDynamicContent(option) {
+            switch(option) {
+                case 'breathing':
+                    document.getElementById('startBreathingBtn').addEventListener('click', startBreathingExercise);
+                    document.getElementById('stopBreathingBtn').addEventListener('click', stopBreathingExercise);
+                    break;
+                    
+                case 'audio':
+                    document.getElementById('playAudioBtn').addEventListener('click', toggleAudio);
+                    break;
+                    
+                case 'family':
+                    document.getElementById('addPhoneBtn').addEventListener('click', addPhoneField);
+                    break;
+                    
+                case 'cultural':
+                    document.querySelectorAll('.filter-option').forEach(option => {
+                        option.addEventListener('click', function() {
+                            const checkbox = this.querySelector('.filter-checkbox');
+                            checkbox.checked = !checkbox.checked;
+                            this.classList.toggle('selected', checkbox.checked);
+                        });
+                    });
+                    break;
+            }
+        }
+        
+        // Function to start breathing exercise
+        function startBreathingExercise() {
+            const circle = document.getElementById('breathingCircle');
+            const startBtn = document.getElementById('startBreathingBtn');
+            const stopBtn = document.getElementById('stopBreathingBtn');
+            
+            isBreathingActive = true;
+            startBtn.style.display = 'none';
+            stopBtn.style.display = 'inline-flex';
+            
+            let phase = 0; // 0: inhale, 1: hold, 2: exhale
+            let seconds = 0;
+            
+            circle.textContent = "Breathe In";
+            circle.style.transform = "scale(1.2)";
+            
+            breathingInterval = setInterval(() => {
+                seconds++;
+                
+                if (phase === 0 && seconds <= 4) {
+                    circle.textContent = `Breathe In\n${seconds}`;
+                } else if (phase === 0 && seconds > 4) {
+                    phase = 1;
+                    seconds = 1;
+                    circle.textContent = "Hold";
+                    circle.style.transform = "scale(1)";
+                } else if (phase === 1 && seconds <= 7) {
+                    circle.textContent = `Hold\n${seconds}`;
+                } else if (phase === 1 && seconds > 7) {
+                    phase = 2;
+                    seconds = 1;
+                    circle.textContent = "Breathe Out";
+                    circle.style.transform = "scale(0.8)";
+                } else if (phase === 2 && seconds <= 8) {
+                    circle.textContent = `Breathe Out\n${seconds}`;
+                } else if (phase === 2 && seconds > 8) {
+                    phase = 0;
+                    seconds = 1;
+                    circle.textContent = "Breathe In";
+                    circle.style.transform = "scale(1.2)";
+                }
+            }, 1000);
+            
+            console.log("Breathing exercise started");
+        }
+        
+        // Function to stop breathing exercise
+        function stopBreathingExercise() {
+            if (breathingInterval) {
+                clearInterval(breathingInterval);
+            }
+            
+            const circle = document.getElementById('breathingCircle');
+            const startBtn = document.getElementById('startBreathingBtn');
+            const stopBtn = document.getElementById('stopBreathingBtn');
+            
+            isBreathingActive = false;
+            startBtn.style.display = 'inline-flex';
+            stopBtn.style.display = 'none';
+            
+            circle.textContent = "Breathe";
+            circle.style.transform = "scale(1)";
+            
+            console.log("Breathing exercise stopped");
+        }
+        
+        // Function to toggle audio
+        function toggleAudio() {
+           const audio = document.getElementById("reassuranceAudio");
+    const playBtn = document.getElementById("playAudioBtn");
+    const progress = document.getElementById("audioProgress");
+    const timeDisplay = document.getElementById("audioTime");
+            
+            audioPlaying = !audioPlaying;
+            
+            if (audioPlaying) {
+                playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                console.log("Audio started playing");
+                
+                // Simulate audio progress
+                let progressPercent = 0;
+                const audioInterval = setInterval(() => {
+                    if (!audioPlaying) {
+                        clearInterval(audioInterval);
+                        return;
+                    }
+                    
+                    progressPercent += 0.5;
+                    progress.style.width = `${progressPercent}%`;
+                    
+                    const currentTime = Math.floor(progressPercent * 1.05 / 100);
+                    const totalTime = 105; // 1:45 in seconds
+                    
+                    if (progressPercent >= 100) {
+                        audioPlaying = false;
+                        playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                        clearInterval(audioInterval);
+                        progress.style.width = "0%";
+                        timeDisplay.textContent = "0:00 / 1:45";
+                    } else {
+                        const currentMinutes = Math.floor(currentTime / 60);
+                        const currentSeconds = currentTime % 60;
+                        timeDisplay.textContent = `${currentMinutes}:${currentSeconds < 10 ? '0' : ''}${currentSeconds} / 1:45`;
+                    }
+                }, 50);
+            } else {
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
+                console.log("Audio paused");
+            }
+            if (option === "audio") setupAudioPlayer();
+
+
+        }
+        
+        // Function to add phone field
+        function addPhoneField() {
+            const additionalPhones = document.getElementById('additionalPhones');
+            const phoneCount = additionalPhones.children.length + 2;
+            
+            if (phoneCount <= 5) {
+                const phoneDiv = document.createElement('div');
+                phoneDiv.className = 'form-group';
+                phoneDiv.innerHTML = `
+                    <label class="form-label">Phone Number ${phoneCount}</label>
+                    <input type="tel" class="form-input" placeholder="e.g., +27 12 345 6789">
+                `;
+                
+                additionalPhones.appendChild(phoneDiv);
+                
+                if (phoneCount === 5) {
+                    document.getElementById('addPhoneBtn').style.display = 'none';
+                }
+            }
+        }
+        
+        // Function to show language dropdown
+        function toggleLanguageDropdown() {
+            const languageList = document.getElementById('languageList');
+            const isVisible = languageList.style.display === 'block';
+            languageList.style.display = isVisible ? 'none' : 'block';
+        }
+        
+        // Function to change language
+        function changeLanguage(langCode, langName) {
+            currentLanguage = langCode;
+            
+            // Update selected language display
+            document.getElementById('selectedLanguage').textContent = langName;
+            
+            // Update active state in language list
+            document.querySelectorAll('.language-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.getAttribute('data-lang') === langCode) {
+                    item.classList.add('active');
+                }
+            });
+            
+            // Close dropdown
+            document.getElementById('languageList').style.display = 'none';
+            
+            // Repopulate content with new language
+            populateContent(currentOption, langCode);
+            
+            console.log(`Language changed to: ${langName} (${langCode})`);
+        }
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set random patient
+            updatePatientInfo();
+            
+            // Check for saved dark mode preference
+            const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+            if (savedDarkMode) {
+                isDarkMode = true;
+                document.body.classList.add('dark-mode');
+                document.getElementById('modeToggle').innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            }
+            
+            // Set up event listeners
+            
+            // Dark mode toggle
+            document.getElementById('modeToggle').addEventListener('click', toggleDarkMode);
+            
+            // Calm dropdown toggle
+            document.getElementById('calmDropdownBtn').addEventListener('click', toggleCalmDropdown);
+            
+            // Calm option selection
+            document.querySelectorAll('.calm-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    const selectedOption = this.getAttribute('data-option');
+                    selectCalmOption(selectedOption);
+                });
+            });
+            
+            // Close calm dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.calm-dropdown-container')) {
+                    document.getElementById('calmDropdownContent').style.display = 'none';
+                }
+            });
+            
+            // Language dropdown toggle
+            document.getElementById('languageDropdown').addEventListener('click', toggleLanguageDropdown);
+            
+            // Language selection
+            document.querySelectorAll('.language-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const langCode = this.getAttribute('data-lang');
+                    const langName = this.textContent;
+                    changeLanguage(langCode, langName);
+                });
+            });
+            
+            // Close language dropdown when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.language-selector')) {
+                    document.getElementById('languageList').style.display = 'none';
+                }
+            });
+            
+            // Start activity button
+            document.getElementById('startActivityBtn').addEventListener('click', function() {
+                // This will trigger the specific activity based on current option
+                if (currentOption === 'breathing') {
+                    startBreathingExercise();
+                } else if (currentOption === 'audio') {
+                    toggleAudio();
+                } else {
+                    alert('Activity started. In a real application, this would initiate the selected support activity.');
+                }
+            });
+            
+            // Back to menu button
+            document.getElementById('backToMenuBtn').addEventListener('click', function() {
+                // Stop any active activities
+                if (isBreathingActive) {
+                    stopBreathingExercise();
+                }
+                
+                if (audioPlaying) {
+                    audioPlaying = false;
+                }
+                
+                // Hide content display
+                document.getElementById('contentDisplay').style.display = 'none';
+                
+                // Scroll back to top
+                document.querySelector('.calm-mode-section').scrollIntoView({ behavior: 'smooth' });
+            });
+
+            const startActivityBtn = document.getElementById("startActivityBtn");
+const sendToFamilyBtn = document.getElementById("sendToFamilyBtn");
+const familyPopup = document.getElementById("familyPopup");
+const closePopupBtn = document.getElementById("closePopupBtn");
+
+// When user selects a calm option
+document.querySelectorAll(".calm-option").forEach(option => {
+    option.addEventListener("click", () => {
+        let chosen = option.getAttribute("data-option");
+
+        // If user chooses Family
+        if (chosen === "family") {
+            startActivityBtn.style.display = "none";
+            sendToFamilyBtn.style.display = "inline-flex";
+        } else {
+            sendToFamilyBtn.style.display = "none";
+            startActivityBtn.style.display = "inline-flex";
+        }
+    });
+});
+
+// Show popup when Send to Family is clicked
+sendToFamilyBtn.addEventListener("click", () => {
+    familyPopup.style.display = "flex";
+});
+
+// Hide popup when OK is clicked
+closePopupBtn.addEventListener("click", () => {
+    familyPopup.style.display = "none";
+});
+
+
+        });
+    </script>
+    </body>
+</html>

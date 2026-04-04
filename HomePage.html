@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LlamaCare - Where understanding meets comfort</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f9ff;
+            color: #2c3e50;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(176, 224, 230, 0.3) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(135, 206, 235, 0.3) 0%, transparent 20%);
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 90vh;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            width: 100%;
+        }
+        
+        .welcome-text {
+            font-size: 1.8rem;
+            color: #3498db;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        
+        .app-name {
+            font-size: 4.5rem;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .app-name::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 5px;
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            border-radius: 5px;
+        }
+        
+        .tagline {
+            font-size: 1.6rem;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-bottom: 3rem;
+            font-weight: 400;
+            max-width: 600px;
+            line-height: 1.5;
+            padding: 0 20px;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 3rem;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+        
+        .llama-illustration {
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .llama-shape {
+            width: 300px;
+            height: 350px;
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            border-radius: 40% 40% 45% 45%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 15px 30px rgba(52, 152, 219, 0.3);
+            overflow: hidden;
+        }
+        
+        .llama-shape::before {
+            content: '';
+            position: absolute;
+            width: 100px;
+            height: 120px;
+            background-color: white;
+            border-radius: 50%;
+            top: 60px;
+            left: 100px;
+        }
+        
+        .llama-shape::after {
+            content: '';
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: #2c3e50;
+            border-radius: 50%;
+            top: 90px;
+            left: 125px;
+            box-shadow: 30px 0 0 #2c3e50;
+        }
+        
+        .llama-ears {
+            position: absolute;
+            width: 40px;
+            height: 60px;
+            background-color: #2980b9;
+            border-radius: 20px;
+            top: 40px;
+            left: 80px;
+            transform: rotate(-30deg);
+        }
+        
+        .llama-ears::after {
+            content: '';
+            position: absolute;
+            width: 40px;
+            height: 60px;
+            background-color: #2980b9;
+            border-radius: 20px;
+            top: 0;
+            left: 140px;
+            transform: rotate(30deg);
+        }
+        
+        .features {
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            background-color: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+        
+        .features h2 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.5rem;
+        }
+        
+        .feature-list {
+            list-style-type: none;
+        }
+        
+        .feature-list li {
+            padding: 1rem 0;
+            border-bottom: 1px solid #ecf0f1;
+            display: flex;
+            align-items: center;
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-list i {
+            color: #3498db;
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .login-section {
+            text-align: center;
+            margin-top: 2rem;
+            width: 100%;
+        }
+        
+        .login-button {
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            color: white;
+            border: none;
+            padding: 1.2rem 3rem;
+            font-size: 1.4rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 280px;
+        }
+        
+        .login-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(52, 152, 219, 0.5);
+        }
+        
+        .login-button:active {
+            transform: translateY(0);
+        }
+        
+        .login-button i {
+            margin-left: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .login-button:hover i {
+            transform: translateX(5px);
+        }
+        
+        .footer {
+            margin-top: 3rem;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            width: 100%;
+            padding-top: 1.5rem;
+            border-top: 1px solid #ecf0f1;
+        }
+        
+        .app-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .badge {
+            background-color: #ecf0f1;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: #2c3e50;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .app-name {
+                font-size: 3.5rem;
+            }
+            
+            .tagline {
+                font-size: 1.4rem;
+            }
+            
+            .llama-shape {
+                width: 250px;
+                height: 300px;
+            }
+            
+            .llama-shape::before {
+                width: 80px;
+                height: 100px;
+                top: 50px;
+                left: 85px;
+            }
+            
+            .llama-shape::after {
+                width: 40px;
+                height: 40px;
+                top: 75px;
+                left: 105px;
+                box-shadow: 25px 0 0 #2c3e50;
+            }
+            
+            .llama-ears {
+                left: 65px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .app-name {
+                font-size: 2.8rem;
+            }
+            
+            .welcome-text {
+                font-size: 1.5rem;
+            }
+            
+            .tagline {
+                font-size: 1.2rem;
+            }
+            
+            .login-button {
+                padding: 1rem 2rem;
+                font-size: 1.2rem;
+                min-width: 250px;
+            }
+            
+            .features {
+                padding: 1.5rem;
+            }
+        }
+        
+        /* Animation for llama */
+        @keyframes gentleBounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .llama-shape {
+            animation: gentleBounce 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="welcome-text">Welcome to</div>
+            <h1 class="app-name">LlamaCare</h1>
+            <div class="tagline">"Where understanding meets comfort"</div>
+        </header>
+        
+        <main class="main-content">
+            <div class="llama-illustration">
+                <div class="llama-shape">
+                    <div class="llama-ears"></div>
+                </div>
+            </div>
+            
+            <div class="features">
+                <h2>Your Health Companion</h2>
+                <ul class="feature-list">
+                    <li><i
+                                class="fas fa-user-injured patient-icon"></i>
+                            Pre‑consult patient interview summary</li>
+                        <li><i
+                                class="fas fa-solid fa-notes-medical status-icon stable"></i>
+                            Quick patient
+                            condition overview</li>
+                        <li><i class="fas fa-language"></i> Surgery explained in
+                            home language</li>
+                        <li><i class="fas fa-solid fa-clipboard"></i>
+                            Simplified consent form explanation</li>
+                        <li><i
+                                class="fas fa-solid fa-calendar-check"></i>Personalized
+                            surgery prep
+                            reminders</li>
+                        <li><i class="fas  fa-hand-holding-heart"></i> Calming
+                            support
+                            before surgery</li>
+                </ul>
+            </div>
+        </main>
+        
+        <div class="login-section">
+            <button class="login-button" id="loginBtn" onclick="window.location.href='Registration.html'">
+                TAB TO LOGIN <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+        
+        <footer class="footer">
+            <p>LlamaCare &copy; 2025. All rights reserved.</p>
+            <p>Your trusted partner in healthcare management</p>
+            <div class="app-badges">
+                <span class="badge">HIPAA Compliant</span>
+                <span class="badge">Secure & Encrypted</span>
+                <span class="badge">24/7 Support</span>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Add interactive functionality
+        document.getElementById('loginBtn').addEventListener('click', function() {
+            // In a real app, this would redirect to login page
+            // For this demo, we'll simulate a login prompt
+            this.innerHTML = 'Redirecting to login... <i class="fas fa-spinner fa-spin"></i>';
+            this.style.background = 'linear-gradient(to right, #2ecc71, #3498db)';
+            
+            // Reset button after 2 seconds (simulating redirect)
+            setTimeout(() => {
+                this.innerHTML = 'TAB TO LOGIN <i class="fas fa-arrow-right"></i>';
+                this.style.background = 'linear-gradient(to right, #3498db, #2ecc71)';
+                
+                // Show a mock login message
+                alert('In the actual app, this would redirect to the login page. For this demo, imagine you\'ve been taken to the secure login screen.');
+            }, 2000);
+        });
+        
+        // Add subtle animation to welcome text
+        document.querySelector('.welcome-text').style.opacity = '0';
+        document.querySelector('.welcome-text').style.transform = 'translateY(-20px)';
+        
+        // Animate elements on load
+        window.addEventListener('load', function() {
+            // Fade in welcome text
+            setTimeout(() => {
+                document.querySelector('.welcome-text').style.transition = 'opacity 1s ease, transform 1s ease';
+                document.querySelector('.welcome-text').style.opacity = '1';
+                document.querySelector('.welcome-text').style.transform = 'translateY(0)';
+            }, 300);
+            
+            // Animate tagline
+            setTimeout(() => {
+                document.querySelector('.tagline').style.transition = 'opacity 1.5s ease';
+                document.querySelector('.tagline').style.opacity = '1';
+            }, 800);
+        });
+        
+        // Set initial opacity for tagline
+        document.querySelector('.tagline').style.opacity = '0.8';
+    </script>
+</body>
+</html>

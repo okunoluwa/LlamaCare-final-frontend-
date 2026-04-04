@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LlamaCare - Session Ended</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Color variables for light mode */
+        :root {
+            --primary-blue: #3498db;
+            --secondary-green: #2ecc71;
+            --dark-text: #2c3e50;
+            --light-text: #7f8c8d;
+            --background: #f0f9ff;
+            --white: #ffffff;
+            --input-border: #ecf0f1;
+            --input-focus: #3498db;
+            --card-bg: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --gradient-bg: linear-gradient(to right, #3498db, #2ecc71);
+            --success-color: #27ae60;
+        }
+        
+        /* Dark mode variables */
+        .dark-mode {
+            --primary-blue: #2980b9;
+            --secondary-green: #27ae60;
+            --dark-text: #ecf0f1;
+            --light-text: #bdc3c7;
+            --background: #1a1a2e;
+            --white: #2c3e50;
+            --input-border: #34495e;
+            --input-focus: #3498db;
+            --card-bg: #2c3e50;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --gradient-bg: linear-gradient(to right, #2980b9, #27ae60);
+            --success-color: #229954;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        body {
+            background-color: var(--background);
+            color: var(--dark-text);
+            min-height: 100vh;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(52, 152, 219, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(46, 204, 113, 0.1) 0%, transparent 20%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 0;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            background: var(--gradient-bg);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .logo-text {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-text);
+            letter-spacing: 1px;
+        }
+        
+        /* Controls */
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .mode-toggle {
+            background: var(--gradient-bg);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .mode-toggle:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        /* Logout Content */
+        .logout-container {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 10px 25px var(--shadow-color);
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .logout-icon {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .success-icon {
+            color: var(--success-color);
+        }
+        
+        .logout-title {
+            font-size: 2.2rem;
+            color: var(--dark-text);
+            margin-bottom: 1rem;
+        }
+        
+        .logout-message {
+            font-size: 1.3rem;
+            color: var(--light-text);
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .security-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            background-color: rgba(52, 152, 219, 0.1);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            margin-bottom: 2rem;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+        
+        .security-badge i {
+            color: var(--success-color);
+            font-size: 1.2rem;
+        }
+        
+        /* Countdown */
+        .countdown-container {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background-color: rgba(52, 152, 219, 0.05);
+            border-radius: 15px;
+            display: inline-block;
+        }
+        
+        .countdown-text {
+            font-size: 1.1rem;
+            color: var(--light-text);
+            margin-bottom: 0.8rem;
+        }
+        
+        .countdown-timer {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            font-family: monospace;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            background: var(--gradient-bg);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(52, 152, 219, 0.5);
+        }
+        
+        .action-btn.secondary {
+            background-color: #ecf0f1;
+            color: var(--dark-text);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .action-btn.secondary:hover {
+            background-color: #d5dbdb;
+        }
+        
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--input-border);
+            color: var(--light-text);
+            font-size: 0.9rem;
+            width: 100%;
+        }
+        
+        .footer-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            background-color: rgba(52, 152, 219, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--dark-text);
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            width: 100%;
+            max-width: 400px;
+            height: 8px;
+            background-color: var(--input-border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 2rem auto;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: var(--gradient-bg);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        /* Session Summary */
+        .session-summary {
+            background-color: rgba(52, 152, 219, 0.05);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            text-align: left;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .session-summary h4 {
+            color: var(--dark-text);
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .session-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(52, 152, 219, 0.1);
+        }
+        
+        .session-item:last-child {
+            border-bottom: none;
+        }
+        
+        .session-label {
+            color: var(--light-text);
+        }
+        
+        .session-value {
+            color: var(--dark-text);
+            font-weight: 600;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1.5rem;
+                text-align: center;
+            }
+            
+            .header-controls {
+                justify-content: center;
+            }
+            
+            .logout-container {
+                padding: 2rem;
+            }
+            
+            .logout-title {
+                font-size: 1.8rem;
+            }
+            
+            .logout-message {
+                font-size: 1.1rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .action-btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .logo-text {
+                font-size: 1.8rem;
+            }
+            
+            .logout-title {
+                font-size: 1.6rem;
+            }
+            
+            .logout-icon {
+                font-size: 4rem;
+            }
+            
+            .countdown-timer {
+                font-size: 2rem;
+            }
+            
+            .security-badge {
+                padding: 0.8rem 1.5rem;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .logout-container {
+            animation: fadeIn 0.8s ease;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .logout-icon {
+            animation: pulse 2s infinite ease-in-out;
+        }
+        
+        /* Loading dots */
+        .loading-dots {
+            display: inline-block;
+        }
+        
+        .loading-dots span {
+            animation: blink 1.4s infinite both;
+            font-size: 1.2rem;
+        }
+        
+        .loading-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .loading-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes blink {
+            0%, 80%, 100% { opacity: 0; }
+            40% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo-container">
+                <i class="fas fa-heartbeat logo-icon"></i>
+                <h1 class="logo-text">LlamaCare</h1>
+            </div>
+            
+            <div class="header-controls">
+                <button class="mode-toggle" id="modeToggle">
+                    <i class="fas fa-moon"></i> Dark Mode
+                </button>
+            </div>
+        </header>
+        
+        <!-- Logout Content -->
+        <div class="logout-container">
+            <div class="logout-icon success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            
+            <h1 class="logout-title">You Have Successfully Logged Out</h1>
+            
+            <div class="security-badge">
+                <i class="fas fa-shield-alt"></i>
+                <span>Your information is secure and protected</span>
+            </div>
+            
+            <p class="logout-message">
+                Thank you for using LlamaCare. Your session has been securely terminated and all personal data has been protected according to HIPAA compliance standards.
+            </p>
+            
+            <!-- Countdown Timer -->
+            <div class="countdown-container">
+                <div class="countdown-text">Redirecting to registration page in:</div>
+                <div class="countdown-timer" id="countdown">5</div>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            
+            <!-- Session Summary -->
+            <div class="session-summary">
+                <h4><i class="fas fa-history"></i> Session Summary</h4>
+                
+                <div class="session-item">
+                    <span class="session-label">Session Duration:</span>
+                    <span class="session-value" id="sessionDuration">25 minutes</span>
+                </div>
+                
+                <div class="session-item">
+                    <span class="session-label">Pages Visited:</span>
+                    <span class="session-value" id="pagesVisited">7</span>
+                </div>
+                
+                <div class="session-item">
+                    <span class="session-label">Last Activity:</span>
+                    <span class="session-value" id="lastActivity">Post-Op Guidance</span>
+                </div>
+                
+                <div class="session-item">
+                    <span class="session-label">Security Status:</span>
+                    <span class="session-value" style="color: var(--success-color);">✓ Secured</span>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="action-btn" id="goToRegistrationBtn">
+                    <i class="fas fa-user-plus"></i> Go to Registration
+                </button>
+                
+                <button class="action-btn secondary" id="returnToLoginBtn" onclick="window.location.href='login.html'">
+                    <i class="fas fa-sign-in-alt"></i> Return to Login
+                </button>
+            </div>
+            
+            <p style="color: var(--light-text); margin-top: 2rem; font-size: 0.9rem;">
+                <i class="fas fa-info-circle"></i> You will be automatically redirected in <span id="remainingSeconds">5</span> seconds
+            </p>
+        </div>
+        
+        <!-- Footer -->
+        <footer>
+            <p>LlamaCare &copy; 2025. "Where understanding meets comfort"</p>
+            <div class="footer-badges">
+                <span class="badge">HIPAA Compliant</span>
+                <span class="badge">End-to-End Encryption</span>
+                <span class="badge">Secure Session Termination</span>
+                <span class="badge">Data Privacy Protected</span>
+            </div>
+        </footer>
+    </div>
+    
+    <script>
+        // Current state
+        let isDarkMode = false;
+        let countdown = 30; // seconds until redirect
+        let countdownInterval;
+        let progressInterval;
+        
+        // Function to toggle dark mode
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark-mode', isDarkMode);
+            
+            const modeToggle = document.getElementById('modeToggle');
+            if (isDarkMode) {
+                modeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            } else {
+                modeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+            }
+            
+            // Save preference to localStorage
+            localStorage.setItem('darkMode', isDarkMode);
+        }
+        
+        // Function to start countdown
+        function startCountdown() {
+            const countdownElement = document.getElementById('countdown');
+            const remainingSecondsElement = document.getElementById('remainingSeconds');
+            const progressBar = document.getElementById('progressBar');
+            
+            // Update countdown every second
+            countdownInterval = setInterval(() => {
+                countdown--;
+                countdownElement.textContent = countdown;
+                remainingSecondsElement.textContent = countdown;
+                
+                // Update progress bar
+                const progressPercentage = 100 - ((countdown / 5) * 100);
+                progressBar.style.width = `${progressPercentage}%`;
+                
+                // Redirect when countdown reaches 0
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    redirectToRegistration();
+                }
+            }, 1000);
+        }
+        
+        // Function to redirect to registration page
+        function redirectToRegistration() {
+            console.log('Redirecting to Registration.html');
+            // In a real application, this would redirect to the registration page
+            // For this demo, we'll simulate the redirect
+            window.location.href = 'Registration.html';
+            
+            // For demo purposes, show a message instead of actual redirect
+            // alert('In a real application, this would redirect to Registration.html');
+            // document.getElementById('countdown').textContent = "Redirecting...";
+        }
+        
+        // Function to generate random session data
+        function generateSessionData() {
+            const durations = ["15 minutes", "25 minutes", "42 minutes", "1 hour 10 minutes", "38 minutes"];
+            const pages = [5, 7, 9, 6, 8];
+            const activities = ["Pre-op Preparation", "Consent Form Explanation", "Post-Op Guidance", "Anaesthesia Buddy", "Patient Summary"];
+            
+            const randomIndex = Math.floor(Math.random() * durations.length);
+            
+            document.getElementById('sessionDuration').textContent = durations[randomIndex];
+            document.getElementById('pagesVisited').textContent = pages[randomIndex];
+            document.getElementById('lastActivity').textContent = activities[randomIndex];
+        }
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check for saved dark mode preference
+            const savedDarkMode = localStorage.getItem('darkMode') === 'true';
+            if (savedDarkMode) {
+                isDarkMode = true;
+                document.body.classList.add('dark-mode');
+                document.getElementById('modeToggle').innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+            }
+            
+            // Generate random session data
+            generateSessionData();
+            
+            // Start countdown timer
+            startCountdown();
+            
+            // Set up event listeners
+            
+            // Dark mode toggle
+            document.getElementById('modeToggle').addEventListener('click', toggleDarkMode);
+            
+            // Go to registration button
+            document.getElementById('goToRegistrationBtn').addEventListener('click', function() {
+                clearInterval(countdownInterval);
+                redirectToRegistration();
+            });
+            
+            // Return to login button
+            document.getElementById('returnToLoginBtn').addEventListener('click', function() {
+                clearInterval(countdownInterval);
+                console.log('Returning to login page');
+                // In a real application, this would redirect to the login page
+                alert('In a real application, this would redirect to the login page.');
+                document.getElementById('countdown').textContent = "Redirecting to login...";
+                
+                // Simulate redirect after 1 second
+                setTimeout(() => {
+                    // window.location.href = 'login.html';
+                    document.getElementById('logoutTitle').textContent = "Redirecting to Login...";
+                }, 1000);
+            });
+            
+            // Log session termination
+            console.log('Session terminated securely');
+            console.log('User data protected according to HIPAA standards');
+            
+            // Simulate clearing session data
+            setTimeout(() => {
+                console.log('Temporary session data cleared from browser');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
